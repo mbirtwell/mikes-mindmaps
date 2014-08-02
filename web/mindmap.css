@@ -1,6 +1,6 @@
 
 body {
-  background-color: #F8F8F8;
+  background-color: darkgray;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
   font-weight: normal;
@@ -8,29 +8,26 @@ body {
   margin: 15px;
 }
 
-h1, p {
-  color: #333;
+h1 {
+    display: block;
+    width: 50%;
+    background-color: lightgray;
+    color: lightskyblue;
+    font-weight: bolder;
+    border: 2px solid darkblue;
+    border-radius: 15px;
+    margin: 15px auto;
+    text-align: center;
+    padding: 15px;
 }
 
-#sample_container_id {
-  width: 100%;
-  height: 50px;
-  border: 1px solid #ccc;
-  background-color: #fff;
+button#create {
+    display: block;
+    padding: 15px;
+    background-color: lightgreen;
+    border: 2px solid darkgreen;
+    border-radius: 15px;
+    width: 30%;
+    margin: 10px auto;
 }
 
-#sample_text_id {
-  font-size: 20pt;
-  text-align: center;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.note {
-  width: 75%;
-  margin: 10px auto;
-  border: 1px solid blue;
-  background-color: skyblue;
-  boder-radius: 10px;
-  text-align: center;
-}

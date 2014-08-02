@@ -33,7 +33,7 @@ class NewVisitorTest(TestCase):
         # It takes her to a new mind map url
         self.assertRegex(brow.current_url, '/map/\d+')
 
-        self.Fail('Finish the tests')
+        self.fail('Finish the tests')
         # There's a place to create the root
 
         # She creates a root herbs
