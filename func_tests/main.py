@@ -41,9 +41,10 @@ class NewVisitorTest(TestCase):
         indicator = brow.find_element_by_id('idIndicator')
         self.assertIn(mapNum, indicator.text)
 
-        self.fail('Finish the tests')
-
         # There's a place to create the root
+        input = brow.find_element_by_css_selector('input[type="text"]')
+
+        self.fail('Finish the tests')
 
         # She creates a root herbs
 
