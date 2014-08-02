@@ -20,7 +20,7 @@ h1, p {
 }
 
 #sample_text_id {
-  font-size: 24pt;
+  font-size: 20pt;
   text-align: center;
   -webkit-user-select: none;
   user-select: none;
@@ -28,8 +28,9 @@ h1, p {
 
 .note {
   width: 75%;
-  margin: 0 auto;
+  margin: 10px auto;
   border: 1px solid blue;
   background-color: skyblue;
   boder-radius: 10px;
+  text-align: center;
 }
