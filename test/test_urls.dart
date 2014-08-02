@@ -51,6 +51,9 @@ main () {
   test('index', () {
     expect(urls.index, urlMatcher('/'));
   });
+  test('create map', () {
+    expect(urls.create, urlMatcher('/map/create'));
+  });
   test('data stream', () {
     expect(urls.data, urlMatcher('/map/1234/data', ['1234']));
   });
