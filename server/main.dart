@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:http_server/http_server.dart';
 import 'package:path/path.dart';
 import 'package:route/server.dart';
+import 'urls.dart';
 
 serveTest(HttpRequest req) {
   req.response.write("test page");
@@ -20,23 +21,10 @@ stream(HttpRequest req) {
 }
 
 main() {
-  var webroot = join(dirname(Platform.script.toFilePath()), 'web');
+  var webroot = join(dirname(Platform.script.toFilePath()), '../web');
   var vd = new VirtualDirectory(webroot);
   // for now. Necessary to server from packages as set up by DartEditor
   vd.jailRoot = false;
-
-  var urls = [
-      [new RegExp(r"^/$"), (request) => vd.serveFile(new File(join(webroot, 'index.html')), request)],
-      [new RegExp(r"^/test$"), serveTest],
-      [new RegExp(r"^/stream$"), stream],
-      [new RegExp(r""), (request) => vd.serveRequest(request)]
-  ];
-
-  urls = {
-    'index': new UrlPattern(r'/'),
-    'test': new UrlPattern(r'/test'),
-    'stream': new UrlPattern(r'/stream'),
-  };
 
   HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4040)
       .then((HttpServer server) {
