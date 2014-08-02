@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:http_server/http_server.dart';
-import 'packages/path/path.dart';
+import 'package:path/path.dart';
+import 'package:route/server.dart';
 
 serveTest(HttpRequest req) {
   req.response.write("test page");
@@ -31,27 +32,19 @@ main() {
       [new RegExp(r""), (request) => vd.serveRequest(request)]
   ];
 
+  urls = {
+    'index': new UrlPattern(r'/'),
+    'test': new UrlPattern(r'/test'),
+    'stream': new UrlPattern(r'/stream'),
+  };
+
   HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4040)
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
-    server.listen((HttpRequest request) {
-      print('got request for ${request.uri.path}');
-      var found = false;
-      for(var entry in urls) {
-        RegExp re = entry[0];
-        if(re.hasMatch(request.uri.path)){
-          var func = entry[1];
-          found = true;
-          func(request);
-          break;
-        }
-      }
-      if(!found) {
-        print('No matcing URL');
-        request.response.statusCode == 404;
-        request.response.write("Not Found");
-        request.response.close();
-      }
-    });
+    var router = new Router(server)
+      ..serve(urls['index']).listen((req) => vd.serveFile(new File(join(webroot, 'index.html')), req))
+      ..serve(urls['test']).listen(serveTest)
+      ..serve(urls['stream']).listen(stream)
+      ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }
