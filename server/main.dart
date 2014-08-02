@@ -4,7 +4,7 @@ import 'package:http_server/http_server.dart';
 import 'package:path/path.dart';
 import 'package:route/server.dart';
 
-import 'urls.dart' as urls;
+import '../lib/urls.dart' as urls;
 import 'handlers.dart';
 
 serveTest(HttpRequest req) {
@@ -25,19 +25,26 @@ stream(HttpRequest req) {
 }
 
 main() {
-  var webroot = join(dirname(Platform.script.toFilePath()), '../web');
-  var vd = new VirtualDirectory(webroot);
+  var projroot = dirname(dirname(Platform.script.toFilePath()));
+  var webroot = join(projroot, 'web');
+  var vd = new VirtualDirectory(projroot);
+
   // for now. Necessary to server from packages as set up by DartEditor
   vd.jailRoot = false;
+
+  serveFile(fn) {
+    return (req) => vd.serveFile(new File(join(webroot, fn)), req);
+  }
 
   HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4040)
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
     var router = new Router(server)
-      ..serve(urls.index).listen((req) => vd.serveFile(new File(join(webroot, 'index.html')), req))
+      ..serve(urls.index).listen(serveFile('index.html'))
       ..serve(urls.create).listen(createMindMap)
       ..serve(urls.test).listen(serveTest)
       ..serve(urls.stream).listen(stream)
+      ..serve(urls.map).listen(serveFile('mindmap.html'))
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }

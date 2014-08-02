@@ -1,6 +1,7 @@
 import 'dart:html';
+import '/lib/urls.dart' as urls;
 
-void main() {
-  querySelector("#create")
-      .onClick.listen((event) => window.location.assign('/map/create'));
+main () {
+  querySelector('#idIndicator')
+    ..text = urls.map.parse(window.location.pathname)[0];
 }

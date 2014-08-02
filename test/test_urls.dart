@@ -1,6 +1,6 @@
 import "package:unittest/unittest.dart";
 import "package:route/url_pattern.dart";
-import "../server/urls.dart" as urls;
+import '../lib/urls.dart' as urls;
 
 
 class UrlPathMatches extends CustomMatcher
@@ -53,6 +53,9 @@ main () {
   });
   test('create map', () {
     expect(urls.create, urlMatcher('/map/create'));
+  });
+  test('map', () {
+    expect(urls.map, urlMatcher('/map/1234', ['1234']));
   });
   test('data stream', () {
     expect(urls.data, urlMatcher('/map/1234/data', ['1234']));

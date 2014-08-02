@@ -1,3 +1,4 @@
+import re
 from unittest import TestCase, main
 import selenium.webdriver
 
@@ -30,11 +31,17 @@ class NewVisitorTest(TestCase):
         create = brow.find_element_by_css_selector("button#create")
         create.click()
 
+        mapRe = re.compile('/map/(\d+)')
         # It takes her to a new mind map url
-        self.assertRegex(brow.current_url, '/map/\d+')
+        self.assertRegex(brow.current_url, mapRe)
+
+        # It's still a MindMap and has an indicator for the mind maps ID
+        self.assertIn("MindMap", brow.title)
+        mapNum = mapRe.search(brow.current_url).group(1)
+        indicator = brow.find_element_by_id('idIndicator')
+        self.assertIn(mapNum, indicator.text)
 
         self.fail('Finish the tests')
-        # It has an indicator for the mind maps ID
 
         # There's a place to create the root
 
