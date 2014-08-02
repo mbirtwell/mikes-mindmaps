@@ -1,7 +1,6 @@
 import "package:route/url_pattern.dart";
 
-var urls = {
-    'index': new UrlPattern(r'/'),
-    'test': new UrlPattern(r'/test'),
-    'stream': new UrlPattern(r'/stream'),
-};
+UrlPattern index = new UrlPattern(r'/');
+UrlPattern test = new UrlPattern(r'/test');
+UrlPattern stream = new UrlPattern(r'/stream');
+UrlPattern data = new UrlPattern(r'/map/(\d+)/data');

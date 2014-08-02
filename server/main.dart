@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:http_server/http_server.dart';
 import 'package:path/path.dart';
 import 'package:route/server.dart';
-import 'urls.dart';
+import 'urls.dart' as urls;
 
 serveTest(HttpRequest req) {
   req.response.write("test page");
@@ -32,9 +32,9 @@ main() {
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
     var router = new Router(server)
-      ..serve(urls['index']).listen((req) => vd.serveFile(new File(join(webroot, 'index.html')), req))
-      ..serve(urls['test']).listen(serveTest)
-      ..serve(urls['stream']).listen(stream)
+      ..serve(urls.index).listen((req) => vd.serveFile(new File(join(webroot, 'index.html')), req))
+      ..serve(urls.test).listen(serveTest)
+      ..serve(urls.stream).listen(stream)
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }
