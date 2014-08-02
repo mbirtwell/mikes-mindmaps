@@ -31,3 +31,15 @@ button#create {
     margin: 10px auto;
 }
 
+#idIndicatorWrapper {
+    position: relative;
+    top: 15px;
+    left: 15px;
+    padding: 10px;
+    border: 2px solid darkblue;
+    background-color: lightgray;
+    font-weight: bolder;
+    color: lightskyblue;
+    width: 50px;
+    text-align: center;
+}
