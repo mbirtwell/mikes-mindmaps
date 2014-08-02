@@ -1,0 +1,35 @@
+
+body {
+  background-color: #F8F8F8;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.2em;
+  margin: 15px;
+}
+
+h1, p {
+  color: #333;
+}
+
+#sample_container_id {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+#sample_text_id {
+  font-size: 24pt;
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.note {
+  width: 75%;
+  margin: 0 auto;
+  border: 1px solid blue;
+  background-color: skyblue;
+  boder-radius: 10px;
+}
