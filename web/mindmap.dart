@@ -6,16 +6,20 @@ void main() {
       ..onClick.listen(reverseText);
   new WebSocket("ws://127.0.0.1:4040/stream").onMessage.listen((MessageEvent msg) {
     querySelector("#notes_container").append(new ParagraphElement()
-                                            ..appendText(msg.data));
+                                             ..appendText(msg.data)
+                                             ..setAttribute("class", "note")
+                                             ..onClick.listen(reverseText)
+                                             );
 
   });
 }
 
 void reverseText(MouseEvent event) {
-  var text = querySelector("#sample_text_id").text;
+  var targetEl = event.target as Element;
+  var text = targetEl.text;
   var buffer = new StringBuffer();
   for (int i = text.length - 1; i >= 0; i--) {
     buffer.write(text[i]);
   }
-  querySelector("#sample_text_id").text = buffer.toString();
+  targetEl.text = buffer.toString();
 }

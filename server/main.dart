@@ -16,6 +16,8 @@ stream(HttpRequest req) {
       websock.add("Hello there");
     }).whenComplete(() => new Future.delayed(new Duration(seconds:2), () {
       websock.add("It's mighty nice to see you");
+    })).whenComplete(() => new Future.delayed(new Duration(seconds:1), () {
+      websock.add("I'm getting really playful now");
     }));
   });
 }
