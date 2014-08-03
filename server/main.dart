@@ -6,6 +6,7 @@ import 'package:route/server.dart';
 
 import '../lib/urls.dart' as urls;
 import 'handlers.dart';
+import 'core.dart';
 
 serveTest(HttpRequest req) {
   req.response.write("test page");
@@ -25,6 +26,8 @@ stream(HttpRequest req) {
 }
 
 main() {
+  Core.instance = new Core();
+
   var projroot = dirname(dirname(Platform.script.toFilePath()));
   var webroot = join(projroot, 'web');
   var vd = new VirtualDirectory(projroot);
