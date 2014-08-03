@@ -62,3 +62,11 @@ button#create {
     width: 200px;
     height: 100px;
 }
+
+.node {
+    width: 200px;
+    display: block;
+    border: 2px solid darkblue;
+    background-color: lightgray;
+    margin: 30px auto;
+}
