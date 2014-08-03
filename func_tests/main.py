@@ -42,7 +42,7 @@ class NewVisitorTest(TestCase):
         self.assertIn(mapNum, indicator.text)
 
         # There's a place to create the root
-        input = brow.find_element_by_css_selector('input[type="text"]')
+        input = brow.find_element_by_css_selector('textarea')
 
         self.fail('Finish the tests')
 

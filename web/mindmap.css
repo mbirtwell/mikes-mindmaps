@@ -43,3 +43,21 @@ button#create {
     width: 50px;
     text-align: center;
 }
+
+.addnode {
+    width: 200px;
+    height: 150px;
+    display: block;
+    border: 2px solid darkblue;
+    background-color: lightgray;
+    border-radius: 30px;
+    padding: 15px;
+}
+
+.addnode textarea {
+    background-color: lightgray;
+    resize: none;
+    border: none;
+    width: 200px;
+    height: 100px;
+}
