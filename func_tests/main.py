@@ -1,5 +1,6 @@
 import re
 from unittest import TestCase, main
+from selenium.common.exceptions import StaleElementReferenceException
 import selenium.webdriver
 
 class NewVisitorTest(TestCase):
@@ -31,22 +32,37 @@ class NewVisitorTest(TestCase):
         create = brow.find_element_by_css_selector("button#create")
         create.click()
 
+        mapUrl = brow.current_url
         mapRe = re.compile('/map/(\d+)')
         # It takes her to a new mind map url
-        self.assertRegex(brow.current_url, mapRe)
+        self.assertRegex(mapUrl, mapRe)
 
         # It's still a MindMap and has an indicator for the mind maps ID
         self.assertIn("MindMap", brow.title)
-        mapNum = mapRe.search(brow.current_url).group(1)
+        mapNum = mapRe.search(mapUrl).group(1)
         indicator = brow.find_element_by_id('idIndicator')
         self.assertIn(mapNum, indicator.text)
 
         # There's a place to create the root
         input = brow.find_element_by_css_selector('textarea')
 
-        self.fail('Finish the tests')
+        # She enters the text for her root: herbs
+        input.send_keys('herbs')
+        # ... and there's an associated button
+        add = brow.find_element_by_css_selector('.addnode button')
+        # it says add
+        self.assertEqual(add.text, 'Add')
+        # so she presses it
+        add.click()
+        #  it doesn't go any where
+        self.assertEqual(brow.current_url, mapUrl)
+        # but the text area has been replaced by the new node
+        self.assertRaises(StaleElementReferenceException,
+                          lambda: input.location_once_scrolled_into_view)
+        node = brow.find_element_by_css_selector('.node')
+        self.assertEqual(node.text, 'herbs')
 
-        # She creates a root herbs
+        self.fail('Finish the tests')
 
         # she adds a couple of other nodes under herbs
 
