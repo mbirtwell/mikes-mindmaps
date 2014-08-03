@@ -57,6 +57,9 @@ main () {
   test('map', () {
     expect(urls.map, urlMatcher('/map/1234', ['1234']));
   });
+  test('addToMap', () {
+    expect(urls.addToMap, urlMatcher('/map/1234/add', ['1234']));
+  });
   test('data stream', () {
     expect(urls.data, urlMatcher('/map/1234/data', ['1234']));
   });
