@@ -110,7 +110,7 @@ class JsonDecoded extends CustomMatcher
 
   featureValueOf(actual) {
     try {
-      return new JsonDecoder().convert(actual);
+      return JSON_TO_BYTES.decode(actual);
     } catch(e) {
       return "Exception ${e}";
     }
@@ -139,7 +139,7 @@ main () {
   });
   test('addNode', () {
     print("addNode");
-    StringBuffer written = new StringBuffer();
+    List<int> written = [];
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
     var req = new HttpRequestMock(
         Uri.parse('/map/1001/add'),
@@ -147,12 +147,12 @@ main () {
         body: JSON_TO_BYTES.encode({
           'contents': 'herbs'
         }));
-    req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
+    req.response.when(callsTo('write')).thenCall((data)=>written.addAll(data));
     req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
     addNode(req).then(expectAsync((_) {
       core.getLogs(callsTo('addNode', 1001, 'herbs')).verify(happenedOnce);
       req.response.getLogs(callsTo('close')).verify(happenedOnce);
-      expect(written.toString(), new JsonDecoded({'id': 101001}));
+      expect(written, new JsonDecoded({'id': 101001}));
     }));
   });
 }

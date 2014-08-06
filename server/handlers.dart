@@ -15,8 +15,14 @@ Future createMindMap(HttpRequest request) {
 
 Future addNode(HttpRequest req) {
   var args = urls.addToMap.parse(req.uri.path);
-  return Core.instance.addNode(int.parse(args[0]), "herbs").then((nodeId) {
-    req.response.write('{"id": 101001}');
-    return req.response.close();
+  // assume that we only get one event
+  return JSON_TO_BYTES.decoder.bind(req).single.then((data) {
+    var contents = data["contents"];
+    return Core.instance.addNode(int.parse(args[0]), contents).then((nodeId) {
+      req.response.write(JSON_TO_BYTES.encode({
+        'id': nodeId
+      }));
+      return req.response.close();
+    });
   });
 }
