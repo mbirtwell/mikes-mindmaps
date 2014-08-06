@@ -17,10 +17,10 @@ class HttpRequestMock extends Mock implements HttpRequest {
   Stream<List<int>> _bodyStream;
   InstanceMirror _streamMirror;
 
-  HttpRequestMock(this.uri, {this.method: 'GET', String body}) {
+  HttpRequestMock(this.uri, {this.method: 'GET', List<int> body}) {
     var bodyIterable = [];
     if(body != null) {
-      bodyIterable.add(body.codeUnits);
+      bodyIterable.add(body);
     }
     _bodyStream = new Stream.fromIterable(bodyIterable);
     _streamMirror = reflect(_bodyStream);
@@ -45,10 +45,6 @@ class HttpRequestMock extends Mock implements HttpRequest {
 
 class HttpResponseMock extends Mock implements HttpResponse {
   int statusCode;
-
-  Future close() {
-    return new Future.value();
-  }
 
   noSuchMethod(i) => super.noSuchMethod(i);
 }
@@ -107,12 +103,18 @@ class UriMatchingPattern extends Matcher
 class JsonDecoded extends CustomMatcher
 {
   JsonDecoded(matcher): super(
-    'json decode',
-    'Check the data decoded as JSON',
+    'json decode to be',
+    'JSON',
     matcher
   );
 
-  featureValueOf(actual) => new JsonDecoder().convert(actual);
+  featureValueOf(actual) {
+    try {
+      return new JsonDecoder().convert(actual);
+    } catch(e) {
+      return "Exception ${e}";
+    }
+  }
 }
 
 class CoreMock extends Mock implements Core
@@ -137,12 +139,12 @@ main () {
   });
   test('addNode', () {
     print("addNode");
-    StringBuffer written;
+    StringBuffer written = new StringBuffer();
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
     var req = new HttpRequestMock(
         Uri.parse('/map/1001/add'),
         method:'POST',
-        body: new JsonCodec().encode({
+        body: JSON_TO_BYTES.encode({
           'contents': 'herbs'
         }));
     req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
@@ -150,7 +152,7 @@ main () {
     addNode(req).then(expectAsync((_) {
       core.getLogs(callsTo('addNode', 1001, 'herbs')).verify(happenedOnce);
       req.response.getLogs(callsTo('close')).verify(happenedOnce);
-      expect(written, new JsonDecoded({'id': 101001}));
+      expect(written.toString(), new JsonDecoded({'id': 101001}));
     }));
   });
 }
