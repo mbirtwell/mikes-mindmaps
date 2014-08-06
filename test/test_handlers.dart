@@ -3,6 +3,7 @@ import 'package:mock/mock.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:mirrors';
 import 'package:route/url_pattern.dart';
 
 import '../lib/urls.dart' as urls;
@@ -13,10 +14,33 @@ class HttpRequestMock extends Mock implements HttpRequest {
   Uri uri;
   String method;
   HttpResponseMock response = new HttpResponseMock();
+  Stream<List<int>> _bodyStream;
+  InstanceMirror _streamMirror;
 
-  HttpRequestMock(this.uri, {this.method: 'GET'});
+  HttpRequestMock(this.uri, {this.method: 'GET', String body}) {
+    var bodyIterable = [];
+    if(body != null) {
+      bodyIterable.add(body.codeUnits);
+    }
+    _bodyStream = new Stream.fromIterable(bodyIterable);
+    _streamMirror = reflect(_bodyStream);
+//    _streamMirror.type.instanceMembers.forEach((key, val) {
+//      print("$key: $val ${val.isGetter} ${val.simpleName}");
+//    });
+  }
 
-  noSuchMethod(i) => super.noSuchMethod(i);
+  when(CallMatcher logFilter) {
+    // TODO: disallow behaviours to be set on Stream methods
+    return super.when(logFilter);
+  }
+
+  noSuchMethod(Invocation i){
+    // Always call Mock.noSuchMethod to populate the log even for Stream methods
+    var rv = super.noSuchMethod(i);
+    if(_streamMirror.type.instanceMembers.containsKey(i.memberName)) {
+      _streamMirror.delegate(i);
+    }
+  }
 }
 
 class HttpResponseMock extends Mock implements HttpResponse {
@@ -107,18 +131,24 @@ main () {
     var req = new HttpRequestMock(new Uri(path:'/map/create'));
     req.response.when(callsTo('redirect', anything)).thenReturn(new Future.value(true));
     createMindMap(req).then(expectAsync((_) {
+      core.getLogs(callsTo('createMap')).verify(happenedOnce);
       req.response.getLogs(callsTo('redirect', new UriMatchingPattern(urls.map, ['1001']))).verify(happenedOnce);
     }));
   });
   test('addNode', () {
+    print("addNode");
     StringBuffer written;
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
-    var req = new HttpRequestMock(Uri.parse('/map/1001/add'), method:'POST');
-    // TODO mock the request having data
+    var req = new HttpRequestMock(
+        Uri.parse('/map/1001/add'),
+        method:'POST',
+        body: new JsonCodec().encode({
+          'contents': 'herbs'
+        }));
     req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
     req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
     addNode(req).then(expectAsync((_) {
-      // TODO expect the call to core.addNode to have the correct data
+      core.getLogs(callsTo('addNode', 1001, 'herbs')).verify(happenedOnce);
       req.response.getLogs(callsTo('close')).verify(happenedOnce);
       expect(written, new JsonDecoded({'id': 101001}));
     }));
