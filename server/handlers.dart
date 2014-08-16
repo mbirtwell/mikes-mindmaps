@@ -19,7 +19,8 @@ Future addNode(HttpRequest req) {
   return JSON_TO_BYTES.decoder.bind(req).single.then((data) {
     return Core.instance.addNode(int.parse(args[0]), data["contents"]);
   }).then((nodeId) {
-    req.response.write(JSON_TO_BYTES.encode({
+    req.response.headers.set('Content-Type', "application/json");
+    req.response.write(JSON.encode({
       'id': nodeId
     }));
     return req.response.close();

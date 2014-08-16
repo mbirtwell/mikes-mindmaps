@@ -48,6 +48,7 @@ main() {
       ..serve(urls.test).listen(serveTest)
       ..serve(urls.stream).listen(stream)
       ..serve(urls.map).listen(serveFile('mindmap.html'))
+      ..serve(urls.addToMap).listen(addNode)
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }

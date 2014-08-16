@@ -10,12 +10,17 @@ import '../lib/urls.dart' as urls;
 import '../server/handlers.dart';
 import '../server/core.dart';
 
+class HttpHeadersMock extends Mock implements HttpHeaders {
+
+}
+
 class HttpRequestMock extends Mock implements HttpRequest {
   Uri uri;
   String method;
   HttpResponseMock response = new HttpResponseMock();
   Stream<List<int>> _bodyStream;
   InstanceMirror _streamMirror;
+  HttpHeadersMock headers = new HttpHeadersMock();
 
   HttpRequestMock(this.uri, {this.method: 'GET', List<int> body}) {
     var bodyIterable = [];
@@ -45,6 +50,7 @@ class HttpRequestMock extends Mock implements HttpRequest {
 
 class HttpResponseMock extends Mock implements HttpResponse {
   int statusCode;
+  HttpHeadersMock headers = new HttpHeadersMock();
 
   noSuchMethod(i) => super.noSuchMethod(i);
 }
@@ -139,7 +145,7 @@ main () {
   });
   test('addNode', () {
     print("addNode");
-    List<int> written = [];
+    StringBuffer written = new StringBuffer();
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
     var req = new HttpRequestMock(
         Uri.parse('/map/1001/add'),
@@ -147,12 +153,12 @@ main () {
         body: JSON_TO_BYTES.encode({
           'contents': 'herbs'
         }));
-    req.response.when(callsTo('write')).thenCall((data)=>written.addAll(data));
+    req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
     req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
     addNode(req).then(expectAsync((_) {
       core.getLogs(callsTo('addNode', 1001, 'herbs')).verify(happenedOnce);
       req.response.getLogs(callsTo('close')).verify(happenedOnce);
-      expect(written, new JsonDecoded({'id': 101001}));
+      expect(JSON.decode(written.toString()), equals({'id': 101001}));
     }));
   });
 }

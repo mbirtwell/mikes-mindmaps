@@ -1,9 +1,12 @@
 import 'dart:html';
+import 'dart:convert';
 import '/lib/urls.dart' as urls;
 
+int mapId;
+
 main () {
-  querySelector('#idIndicator')
-    ..text = urls.map.parse(window.location.pathname)[0];
+  mapId = int.parse(urls.map.parse(window.location.pathname)[0]);
+  querySelector('#idIndicator').text = mapId.toString();
   querySelector('.addnode button.add')
     ..onClick.listen(addNode);
 }
@@ -11,11 +14,28 @@ main () {
 addNode(Event e) {
   e.preventDefault();
   Element addNode = (e.target as Element).parent;
-  var nodeText = (addNode.querySelector('textarea') as TextAreaElement).value;
-  addNode.remove();
-  querySelector('body').append(
-      new DivElement()
-        ..classes.add('node')
-        ..text = nodeText
-  );
+  TextAreaElement textInput = addNode.querySelector('textarea');
+  textInput.setAttribute("disabled", "true");
+  String nodeText = textInput.value;
+  HttpRequest.request('/map/$mapId/add',
+                      method: "POST",
+                      mimeType: "application/json",
+                      requestHeaders: {
+                        'Content-Type': "application/json",
+                      },
+                      sendData: JSON.encode({
+                        "contents": nodeText
+                      })
+                      ).then((req) {
+    if(req.status != 200) {
+      window.alert("error");
+      return;
+    }
+    addNode.remove();
+    querySelector('body').append(
+        new DivElement()
+          ..classes.add('node')
+          ..text = nodeText
+    );
+  });
 }
