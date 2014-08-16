@@ -65,8 +65,53 @@ button#create {
 
 .node {
     width: 200px;
+    height: 50px;
     display: block;
     border: 2px solid darkblue;
     background-color: lightgray;
-    margin: 30px auto;
+    padding: 20px;
+    position: absolute;
+    overflow: visible;
+}
+
+.node-plus {
+    width: 30px;
+    height: 30px;
+    border: 2px outset darkblue;
+    border-radius: 15px;
+    font-size: 20px;
+    position: absolute;
+}
+
+.node-plus:hover {
+    background-color: darkgray;
+}
+
+.node-plus:active {
+    border: 2px inset darkblue;
+    border-radius: 15px;
+}
+
+.node-plus:focus {
+    outline: none;
+}
+
+.node-plus.top {
+    top: -15px;
+    left: calc(50% - 15px);
+}
+
+.node-plus.left {
+    top: calc(50% - 15px);
+    left: -15px;
+}
+
+.node-plus.right {
+    top: calc(50% - 15px);
+    right: -15px;
+}
+
+.node-plus.bottom {
+    bottom: -15px;
+    left: calc(50% - 15px);
 }

@@ -11,6 +11,22 @@ main () {
     ..onClick.listen(addNode);
 }
 
+makeNode(text) {
+  var div = new DivElement()
+    ..classes.add('node')
+    ..style.top = "${window.innerHeight/2 - 30}px"
+    ..style.left = "${window.innerWidth/2 - 100}px"
+  ;
+  for(var pos in ["top", "left", "right", "bottom"]) {
+    div.append(new ButtonElement()
+      ..text = "+"
+      ..classes.addAll(["node-plus", pos])
+    );
+  }
+  div.append(new SpanElement()..text = text);
+  return div;
+}
+
 addNode(Event e) {
   e.preventDefault();
   Element addNode = (e.target as Element).parent;
@@ -32,10 +48,6 @@ addNode(Event e) {
       return;
     }
     addNode.remove();
-    querySelector('body').append(
-        new DivElement()
-          ..classes.add('node')
-          ..text = nodeText
-    );
+    querySelector('body').append(makeNode(nodeText));
   });
 }
