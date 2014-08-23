@@ -15,6 +15,7 @@ class NewVisitorTest(TestCase):
             chrome_options=options,
             )
         self.browsers.append(browser)
+        browser.implicitly_wait(2)
         return browser
 
     def tearDown(self):
@@ -77,6 +78,8 @@ class NewVisitorTest(TestCase):
         # The node has 6 buttons for add new nodes
         self.assertEqual(len(node.find_elements_by_css_selector('.node-plus')), 6)
 
+        # She decides to click one
+        node.find_element_by_css_selector('.bottom-right').click()
         # Clicking one of the plus buttons creates a new addnode
         addNode = regina.find_element_by_css_selector('.addnode')
         # enters text and clicks add

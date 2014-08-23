@@ -15,35 +15,45 @@ addHex(x, y) {
 
   var r = hexSize;
   var ox = cos(30 * PI / 180);
-  var cx = window.innerWidth/2 + x * 2 * ox * r + y * 1.5 * r * tan(30 * PI / 180);
-  var cy = window.innerHeight/2 + y * 1.5 * r;
+  var c = calcCenter(x, y);
   hex.points
-    ..appendItem(svgEl.createSvgPoint()..x = cx ..y = cy - r)
-    ..appendItem(svgEl.createSvgPoint()..x = cx + r * ox ..y = cy - r/2)
-    ..appendItem(svgEl.createSvgPoint()..x = cx + r * ox ..y = cy + r/2)
-    ..appendItem(svgEl.createSvgPoint()..x = cx ..y = cy + r)
-    ..appendItem(svgEl.createSvgPoint()..x = cx - r * ox ..y =  cy + r/2)
-    ..appendItem(svgEl.createSvgPoint()..x = cx - r * ox ..y =  cy - r/2)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x ..y = c.y - r)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x + r * ox ..y = c.y - r/2)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x + r * ox ..y = c.y + r/2)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x ..y = c.y + r)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x - r * ox ..y =  c.y + r/2)
+    ..appendItem(svgEl.createSvgPoint()..x = c.x - r * ox ..y =  c.y - r/2)
   ;
 
   svgEl.append(new svg.TextElement()
-    ..setAttribute('x', "$cx")
-    ..setAttribute('y', cy.toString())
+    ..setAttribute('x', c.x.toString())
+    ..setAttribute('y', c.y.toString())
     ..text = "$x, $y"
   );
+}
+
+Point calcCenter(int x, int y) {
+  var r = hexSize;
+  var ox = cos(30 * PI / 180);
+  var cx = window.innerWidth/2 + x * 2 * ox * r + y * 1.5 * r * tan(30 * PI / 180);
+  var cy = window.innerHeight/2 + y * 1.5 * r;
+  return new Point(cx, cy);
+}
+
+insert(Element el, int x, int y) {
+  querySelector('body').append(el);
+  var c = calcCenter(x, y);
+  el
+    ..style.left = "${c.x - el.offsetWidth/2}px"
+    ..style.top = "${c.y - el.offsetHeight/2}px"
+  ;
 }
 
 main () {
   mapId = int.parse(urls.map.parse(window.location.pathname)[0]);
   querySelector('#idIndicator').text = mapId.toString();
 
-  var addNodeForm = querySelector('.addnode');
-  addNodeForm
-    ..style.top = "${window.innerHeight/2 - addNodeForm.offsetHeight/2}px"
-    ..style.left = "${window.innerWidth/2 - addNodeForm.offsetWidth/2}px"
-  ;
-  querySelector('.addnode button.add')
-    ..onClick.listen(addNode);
+  makeAddNodeForm(0, 0);
 
   for(var x = -2; x < 3; ++x) {
     for(var y = -1; y < 2; ++y) {
@@ -52,27 +62,49 @@ main () {
   }
 }
 
-makeNode(text) {
+makeNode(text, x, y) {
   var div = new DivElement()
     ..classes.add('node')
   ;
-  for(var pos in ["top-left", "top-right", "left",
-                  "right", "bottom-left", "bottom-right"]) {
+  for(var posInfo in [
+      ["left", -1, 0],
+      ["top-left", 0, -1],
+      ["top-right", 1, -1],
+      ["right", 1, 0],
+      ["bottom-left", -1, 1],
+      ["bottom-right", 0, 1],
+  ]) {
+    var posCls = posInfo[0];
+    var xoff = posInfo[1];
+    var yoff = posInfo[2];
     div.append(new ButtonElement()
       ..text = "+"
-      ..classes.addAll(["node-plus", pos])
+      ..classes.addAll(["node-plus", posCls])
+      ..onClick.listen((event) {
+        makeAddNodeForm(x + xoff, y + yoff);
+      })
     );
   }
   div.append(new SpanElement()..text = text);
-  querySelector('body').append(div);
-  div
-    ..style.top = "${window.innerHeight/2 - div.offsetHeight/2}px"
-    ..style.left = "${window.innerWidth/2 - div.offsetWidth/2}px"
-  ;
+  insert(div, x, y);
   return div;
 }
 
-addNode(Event e) {
+makeAddNodeForm(int x, int y) {
+  var addNodeForm = new FormElement()
+    ..classes.add('addnode')
+    ..action = '#'
+    ..append(new TextAreaElement())
+    ..append(new ButtonElement()
+      ..classes.add('add')
+      ..text = 'Add'
+      ..onClick.listen((event) => addNode(event, x, y))
+    )
+  ;
+  insert(addNodeForm, x, y);
+}
+
+addNode(Event e, int x, int y) {
   e.preventDefault();
   Element addNode = (e.target as Element).parent;
   TextAreaElement textInput = addNode.querySelector('textarea');
@@ -93,6 +125,6 @@ addNode(Event e) {
       return;
     }
     addNode.remove();
-    makeNode(nodeText);
+    makeNode(nodeText, x, y);
   });
 }
