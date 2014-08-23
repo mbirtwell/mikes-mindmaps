@@ -6,3 +6,4 @@ dependencies:
   route: any
   unittest: any
   mock: any
+  redis_client: any

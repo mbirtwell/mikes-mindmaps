@@ -21,6 +21,12 @@ class NewVisitorTest(TestCase):
         while self.browsers:
             self.browsers.pop().quit()
 
+    def assertNodeTexts(self, person, expected):
+        nodes = person.find_elements_by_css_selector('.node')
+        texts = {node.find_element_by_css_selector('span').text
+                 for node in nodes}
+        self.assertSetEqual(texts, expected)
+
     def test_can_start_a_new_mind_map(self):
         regina = self.makeBrowser()
         # Regina clicks a link by accident
@@ -62,14 +68,32 @@ class NewVisitorTest(TestCase):
         # but the text area has been replaced by the new node
         self.assertRaises(StaleElementReferenceException,
                           lambda: input.location_once_scrolled_into_view)
-        node = regina.find_element_by_css_selector('.node span')
-        self.assertEqual(node.text, 'herbs')
+        # And there is no other addnode
+        self.assertEqual(len(regina.find_elements_by_css_selector('.addnode')), 0)
 
-        self.fail('Finish the tests')
+        node = regina.find_element_by_css_selector('.node')
+        # The node text is what regina typed in
+        self.assertEqual(node.find_element_by_css_selector('span').text, 'herbs')
+        # The node has 6 buttons for add new nodes
+        self.assertEqual(len(node.find_elements_by_css_selector('.node-plus')), 6)
 
-        # she adds a couple of other nodes under herbs
+        # Clicking one of the plus buttons creates a new addnode
+        addNode = regina.find_element_by_css_selector('.addnode')
+        # enters text and clicks add
+        input = addNode.find_element_by_css_selector('textarea')
+        input.send_keys('rosemary')
+        addNode.find_element_by_css_selector('button').click()
 
-        # she leaves and comes back
+        # There's now two nodes with what regina typed
+        self.assertNodeTexts(regina, {'herbs', 'rosemary'})
+
+        # Regina gives the link for her mind map to edith
+        edith = self.makeBrowser()
+        edith.get(mapUrl)
+
+        # The page has the same stuff on it as when regina left it
+        self.assertNodeTexts(edith, {'herbs', 'rosemary'})
+
 
 if __name__ == "__main__":
     main()
