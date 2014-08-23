@@ -56,7 +56,8 @@ makeNode(text) {
   var div = new DivElement()
     ..classes.add('node')
   ;
-  for(var pos in ["top", "left", "right", "bottom"]) {
+  for(var pos in ["top-left", "top-right", "left",
+                  "right", "bottom-left", "bottom-right"]) {
     div.append(new ButtonElement()
       ..text = "+"
       ..classes.addAll(["node-plus", pos])

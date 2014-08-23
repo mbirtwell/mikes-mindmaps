@@ -107,9 +107,14 @@ button#create {
     outline: none;
 }
 
-.node-plus.top {
+.node-plus.top-left {
     top: -15px;
-    left: calc(50% - 15px);
+    left: calc(25% - 15px);
+}
+
+.node-plus.top-right {
+    top: -15px;
+    left: calc(75% - 15px);
 }
 
 .node-plus.left {
@@ -122,9 +127,14 @@ button#create {
     right: -15px;
 }
 
-.node-plus.bottom {
+.node-plus.bottom-left {
     bottom: -15px;
-    left: calc(50% - 15px);
+    left: calc(25% - 15px);
+}
+
+.node-plus.bottom-right {
+    bottom: -15px;
+    left: calc(75% - 15px);
 }
 
 .wireframe {
