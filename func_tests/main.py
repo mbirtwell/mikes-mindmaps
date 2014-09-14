@@ -1,7 +1,20 @@
 import re
 from unittest import TestCase, main
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 import selenium.webdriver
+import time
+
+
+def waitFor(func, timeout=3):
+    timeout = time.time() + timeout
+
+    while timeout > time.time():
+        try:
+            return func()
+        except (AssertionError, WebDriverException):
+            time.sleep(0.1)
+
+    return func()
 
 class NewVisitorTest(TestCase):
 
@@ -67,8 +80,10 @@ class NewVisitorTest(TestCase):
         #  it doesn't go any where
         self.assertEqual(regina.current_url, mapUrl)
         # but the text area has been replaced by the new node
-        self.assertRaises(StaleElementReferenceException,
-                          lambda: input.location_once_scrolled_into_view)
+        waitFor(lambda: self.assertRaises(
+            StaleElementReferenceException,
+            lambda: input.location_once_scrolled_into_view,
+        ), timeout=1)
         # And there is no other addnode
         self.assertEqual(len(regina.find_elements_by_css_selector('.addnode')), 0)
 
