@@ -10,7 +10,7 @@ class Core {
 
   Core();
 
-  static Future<Core> startUp(String redisConnectionString, int dbNum) {
+  static Future<Core> startUp(String redisConnectionString) {
     return new Core().connect(redisConnectionString).then((core){
       return core.initData();
     }).then((core) {

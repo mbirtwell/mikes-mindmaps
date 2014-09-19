@@ -25,9 +25,7 @@ stream(HttpRequest req) {
   });
 }
 
-main() {
-  Core.instance = new Core();
-
+serve(Core core) {
   var projroot = dirname(dirname(Platform.script.toFilePath()));
   var webroot = join(projroot, 'web');
   var vd = new VirtualDirectory(projroot);
@@ -51,4 +49,10 @@ main() {
       ..serve(urls.addToMap).listen(addNode)
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
+}
+
+main() {
+  Core.startUp("192.168.33.10:6379").then((core) {
+    serve(core);
+  });
 }
