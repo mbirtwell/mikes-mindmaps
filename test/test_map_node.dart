@@ -17,6 +17,10 @@ main () {
     expect(node.position, equals(new Point(1, 0)));
     expect(node.parent, equals(new Point(0, 0)));
   });
+  test('node compares equal with itself', () {
+    var node = new MindMapNode("contents", new Point(1, 0), new Point(0, 0));
+    expect(node == node, isTrue);
+  });
   test('identically contstructed nodes compare equal', () {
     var node1 = new MindMapNode("contents", new Point(1, 0), new Point(0, 0));
     var node2 = new MindMapNode("contents", new Point(1, 0), new Point(0, 0));

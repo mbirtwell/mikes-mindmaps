@@ -1,6 +1,8 @@
 import "dart:async";
 import "package:redis_client/redis_client.dart";
 
+import "../lib/map_node.dart";
+
 class Core {
   static Core instance;
 
@@ -37,5 +39,5 @@ class Core {
     return redisClient.incr("next_map_id");
   }
 
-  Future<int> addNode(int mapId, String text) => new Future.value(100001);
+  Future<int> addNode(int mapId, MindMapNode node) => new Future.value(100001);
 }

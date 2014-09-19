@@ -1,11 +1,13 @@
-import 'package:unittest/unittest.dart';
-import 'package:mock/mock.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:mirrors';
+import 'dart:math';
+import 'package:unittest/unittest.dart';
+import 'package:mock/mock.dart';
 import 'package:route/url_pattern.dart';
 
+import '../lib/map_node.dart';
 import '../lib/urls.dart' as urls;
 import '../server/handlers.dart';
 import '../server/core.dart';
@@ -106,22 +108,23 @@ class UriMatchingPattern extends Matcher
   }
 }
 
-class JsonDecoded extends CustomMatcher
-{
-  JsonDecoded(matcher): super(
-    'json decode to be',
-    'JSON',
-    matcher
-  );
-
-  featureValueOf(actual) {
-    try {
-      return JSON_TO_BYTES.decode(actual);
-    } catch(e) {
-      return "Exception ${e}";
-    }
-  }
-}
+//Codec<Object, List<int>> JSON_TO_BYTES = JSON.fuse(UTF8);
+//class JsonDecoded extends CustomMatcher
+//{
+//  JsonDecoded(matcher): super(
+//    'json decode to be',
+//    'JSON',
+//    matcher
+//  );
+//
+//  featureValueOf(actual) {
+//    try {
+//      return JSON_TO_BYTES.decode(actual);
+//    } catch(e) {
+//      return "Exception ${e}";
+//    }
+//  }
+//}
 
 class CoreMock extends Mock implements Core
 {
@@ -144,19 +147,18 @@ main () {
     }));
   });
   test('addNode', () {
+    var node = new MindMapNode('herbs', new Point(0, 0), null);
     print("addNode");
     StringBuffer written = new StringBuffer();
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
     var req = new HttpRequestMock(
         Uri.parse('/map/1001/add'),
         method:'POST',
-        body: JSON_TO_BYTES.encode({
-          'contents': 'herbs'
-        }));
+        body: UTF8.encode(node.toJson()));
     req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
     req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
     addNode(req).then(expectAsync((_) {
-      core.getLogs(callsTo('addNode', 1001, 'herbs')).verify(happenedOnce);
+      core.getLogs(callsTo('addNode', 1001, node)).verify(happenedOnce);
       req.response.getLogs(callsTo('close')).verify(happenedOnce);
       expect(JSON.decode(written.toString()), equals({'id': 101001}));
     }));
