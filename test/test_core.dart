@@ -1,12 +1,14 @@
+import "dart:math";
 
 import "package:unittest/unittest.dart";
 import "package:redis_client/redis_client.dart";
 
 import "../server/core.dart";
+import "../lib/map_node.dart";
 
 
 main () {
-  var core;
+  Core core;
   setUp(() {
     return new Core().connect("192.168.33.10:6379").then((core) {
       return core.redisClient.select(1).then((_) {
@@ -28,17 +30,14 @@ main () {
       expect(res, equals(1001));
     }));
   });
-  test('add node extends', () {
-    core.addNode(1001, "herbs").then(expectAsync((res) {
-      expect(res, new isInstanceOf<int>());
-    }));
-  });
-  test('redis client', () {
-    RedisClient.connect("192.168.33.10:6379").then(expectAsync((RedisClient client) {
-      client.lrange('test', startingFrom: 0, endingAt: 2).then(expectAsync((result) {
-        expect(result, equals(["entry 2", "entry 1"]));
-        client.close();
-      }));
+  test('add node extends mindmap with node data', () {
+    var node = new MindMapNode("herbs", new Point(0, 0), null);
+    core.addNode(1001, node).then(expectAsync((res) {
+      return core.redisClient.lrange("map/1001");
+    })).then(expectAsync((mapStored) {
+      expect(mapStored, isList);
+      expect(mapStored, hasLength(1));
+      expect(new MindMapNode.fromMap(mapStored[0]), equals(node));
     }));
   });
 }

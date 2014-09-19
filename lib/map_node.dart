@@ -39,7 +39,7 @@ class MindMapNode {
     return new Point(m['x'], m['y']);
   }
 
-  toJson() {
+  toMap() {
     var data = {
         'contents': this.contents,
         'position': _pointToMap(this.position),
@@ -49,8 +49,10 @@ class MindMapNode {
     } else {
       data['parent'] = _pointToMap(this.parent);
     }
-    return JSON.encode(data);
+    return data;
   }
+
+  toJson() => JSON.encode(toMap());
 
   bool operator ==(MindMapNode other) {
     return this.contents == other.contents &&

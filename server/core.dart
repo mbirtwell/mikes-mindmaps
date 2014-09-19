@@ -39,5 +39,7 @@ class Core {
     return redisClient.incr("next_map_id");
   }
 
-  Future<int> addNode(int mapId, MindMapNode node) => new Future.value(100001);
+  Future<int> addNode(int mapId, MindMapNode node) {
+    return redisClient.rpush('map/$mapId', [node.toMap()]);
+  }
 }
