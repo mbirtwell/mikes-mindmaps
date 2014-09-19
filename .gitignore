@@ -18,3 +18,4 @@ pubspec.lock
 # Oh and JetBrains stuff
 /.idea
 web/lib/
+.vagrant
