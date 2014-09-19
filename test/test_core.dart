@@ -40,4 +40,20 @@ main () {
       expect(new MindMapNode.fromMap(mapStored[0]), equals(node));
     }));
   });
+  test('retrieve an non-existant mind map', () {
+    core.getMindMap(1001).then(expectAsync((nodes) {
+      expect(nodes, equals([]));
+    }));
+  });
+  test('retrieve a mind map with a couple of items', (){
+    var nodes = [
+      new MindMapNode('node1', new Point(0, 0), null),
+      new MindMapNode('node2', new Point(0, 1), new Point(0, 0)),
+    ];
+    return core.redisClient.rpush('map/1001', nodes.map((node) => node.toMap())).then((_) {
+      return core.getMindMap(1001);
+    }).then((result) {
+      expect(result, equals(nodes));
+    });
+  });
 }

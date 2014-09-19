@@ -42,4 +42,10 @@ class Core {
   Future<int> addNode(int mapId, MindMapNode node) {
     return redisClient.rpush('map/$mapId', [node.toMap()]);
   }
+
+  Future<List<MindMapNode>> getMindMap(int mapId) {
+    return redisClient.lrange('map/$mapId').then((results) {
+      return results.map((item) => new MindMapNode.fromMap(item));
+    });
+  }
 }
