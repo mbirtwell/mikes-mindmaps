@@ -8,12 +8,29 @@ class Core {
 
   Core();
 
-  static Future<Core> startUp(redisConnectionString) {
-    instance = new Core();
+  static Future<Core> startUp(String redisConnectionString, int dbNum) {
+    return new Core().connect(redisConnectionString).then((core){
+      return core.initData();
+    }).then((core) {
+      instance = core;
+    });
+  }
+
+  Future<Core> connect(String redisConnectionString) {
     return RedisClient.connect(redisConnectionString).then((client) {
-      instance.redisClient = client;
-      return instance.redisClient.msetnx({"next_map_id": 1000});
-    }).then((_) => instance);
+      this.redisClient = client;
+      return this;
+    });
+  }
+
+  Future<Core> initData() {
+    return this.redisClient.msetnx({
+      "next_map_id": 1000,
+    }).then((_) => this);
+  }
+
+  Future close() {
+    return this.redisClient.close();
   }
 
   Future<int> createMap() {

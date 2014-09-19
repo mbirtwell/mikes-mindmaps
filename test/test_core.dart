@@ -1,3 +1,4 @@
+
 import "package:unittest/unittest.dart";
 import "package:redis_client/redis_client.dart";
 
@@ -5,19 +6,30 @@ import "../server/core.dart";
 
 
 main () {
+  var core;
   setUp(() {
-    return Core.startUp("192.168.33.10:6379");
+    return new Core().connect("192.168.33.10:6379").then((core) {
+      return core.redisClient.select(1).then((_) {
+        return core.redisClient.flushdb();
+      }).then((_) {
+        return core.initData();
+      });
+    }).then((core_){
+      core = core_;
+    });
   });
   tearDown(() {
-    return Core.instance.redisClient.close();
+    return core.close().then((_) {
+      core = null;
+    });
   });
   test('add map', () {
-    Core.instance.createMap().then(expectAsync((res) {
-      expect(res, new isInstanceOf<int>());
+    core.createMap().then(expectAsync((res) {
+      expect(res, equals(1001));
     }));
   });
-  test('add node', () {
-    Core.instance.addNode(1001, "herbs").then(expectAsync((res) {
+  test('add node extends', () {
+    core.addNode(1001, "herbs").then(expectAsync((res) {
       expect(res, new isInstanceOf<int>());
     }));
   });
