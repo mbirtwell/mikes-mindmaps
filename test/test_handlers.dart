@@ -179,7 +179,7 @@ main () {
   });
   test('getMindMap returns an empty mind map from core', () {
     var responseVerifier = new ResponseVerifier('/map/1001/get');
-    core.when(callsTo('getMindMap')).alwaysReturn(new Future.value([]));
+    core.when(callsTo('getMindMap')).alwaysReturn(new Future.value([].map((x) => x)));
     getMindMap(responseVerifier.req).then(expectAsync((_) {
       core.getLogs(callsTo('getMindMap', 1001)).verify(happenedOnce);
       responseVerifier.verify(equals([]));

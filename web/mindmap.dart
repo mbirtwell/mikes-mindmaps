@@ -54,7 +54,14 @@ main () {
   mapId = int.parse(urls.map.parse(window.location.pathname)[0]);
   querySelector('#idIndicator').text = mapId.toString();
 
-  makeAddNodeForm(null, new Point(0, 0));
+  HttpRequest.getString('/map/$mapId/get').then((String json) {
+    List<MindMapNode> nodes = JSON.decode(json).map((item) => new MindMapNode.fromMap(item));
+    if(nodes.length == 0) {
+      makeAddNodeForm(null, new Point(0, 0));
+    } else {
+      nodes.forEach((node) => makeNode(node));
+    }
+  });
 
   for(var x = -2; x < 3; ++x) {
     for(var y = -1; y < 2; ++y) {

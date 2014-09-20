@@ -47,6 +47,7 @@ serve(Core core) {
       ..serve(urls.stream).listen(stream)
       ..serve(urls.map).listen(serveFile('mindmap.html'))
       ..serve(urls.addToMap).listen(addNode)
+      ..serve(urls.getMindMap).listen(getMindMap)
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }

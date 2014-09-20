@@ -103,7 +103,7 @@ class NewVisitorTest(TestCase):
         addNode.find_element_by_css_selector('button').click()
 
         # There's now two nodes with what regina typed
-        self.assertNodeTexts(regina, {'herbs', 'rosemary'})
+        waitFor(lambda: self.assertNodeTexts(regina, {'herbs', 'rosemary'}))
 
         # Regina gives the link for her mind map to edith
         edith = self.makeBrowser()
@@ -111,6 +111,8 @@ class NewVisitorTest(TestCase):
 
         # The page has the same stuff on it as when regina left it
         self.assertNodeTexts(edith, {'herbs', 'rosemary'})
+
+        self.fail("Need to extend tests for collaboration")
 
 
 if __name__ == "__main__":
