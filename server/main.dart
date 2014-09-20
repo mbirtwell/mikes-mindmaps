@@ -53,7 +53,17 @@ serve(Core core) {
 }
 
 main() {
-  Core.startUp("192.168.33.10:6379").then((core) {
+  var redisConnectionString;
+  if(Platform.environment.containsKey("REDISCLOUD_URL")) {
+    var redisUrl = Platform.environment['REDSICLOUD_URL'];
+    if(!redisUrl.startsWith("redis://")) {
+      throw new ArgumentError("Bad redis URL $redisUrl");
+    }
+    redisConnectionString = redisUrl.substring("redis://".length);
+  } else {
+    redisConnectionString = "192.168.33.10:6379";
+  }
+  Core.startUp(redisConnectionString).then((core) {
     serve(core);
   });
 }
