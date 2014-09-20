@@ -26,3 +26,12 @@ Future addNode(HttpRequest req) {
     return req.response.close();
   });
 }
+
+Future getMindMap(HttpRequest req) {
+  var args = urls.getMindMap.parse(req.uri.path);
+  return Core.instance.getMindMap(int.parse(args[0])).then((data) {
+    req.response.headers.set('Content-Type', "application/json");
+    req.response.write(JSON.encode(data, toEncodable: (item) => item.toMap()));
+    return req.response.close();
+  });
+}

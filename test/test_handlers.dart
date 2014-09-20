@@ -132,6 +132,28 @@ class CoreMock extends Mock implements Core
   noSuchMethod(i) => super.noSuchMethod(i);
 }
 
+class ResponseVerifier {
+  HttpRequestMock req;
+  StringBuffer written = new StringBuffer();
+
+  ResponseVerifier(String uri, [body=null]) {
+    var method = "GET";
+    if(body != null) {
+      method = "POST";
+      body = UTF8.encode(body);
+    }
+    req = new HttpRequestMock(Uri.parse(uri), method: method, body: body);
+    req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
+    req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
+  }
+
+  verify(Matcher response) {
+    req.response.getLogs(callsTo('close')).verify(happenedOnce);
+    expect(JSON.decode(written.toString()), response);
+
+  }
+}
+
 main () {
   CoreMock core;
   setUp(() {
@@ -148,19 +170,31 @@ main () {
   });
   test('addNode', () {
     var node = new MindMapNode('herbs', new Point(0, 0), null);
-    print("addNode");
-    StringBuffer written = new StringBuffer();
+    var responseVerifier = new ResponseVerifier('/map/1001/add', node.toJson());
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
-    var req = new HttpRequestMock(
-        Uri.parse('/map/1001/add'),
-        method:'POST',
-        body: UTF8.encode(node.toJson()));
-    req.response.when(callsTo('write')).thenCall((data)=>written.write(data));
-    req.response.when(callsTo('close')).alwaysReturn(new Future.value(true));
-    addNode(req).then(expectAsync((_) {
+    addNode(responseVerifier.req).then(expectAsync((_) {
       core.getLogs(callsTo('addNode', 1001, node)).verify(happenedOnce);
-      req.response.getLogs(callsTo('close')).verify(happenedOnce);
-      expect(JSON.decode(written.toString()), equals({'id': 101001}));
+      responseVerifier.verify(equals({'id': 101001}));
+    }));
+  });
+  test('getMindMap returns an empty mind map from core', () {
+    var responseVerifier = new ResponseVerifier('/map/1001/get');
+    core.when(callsTo('getMindMap')).alwaysReturn(new Future.value([]));
+    getMindMap(responseVerifier.req).then(expectAsync((_) {
+      core.getLogs(callsTo('getMindMap', 1001)).verify(happenedOnce);
+      responseVerifier.verify(equals([]));
+    }));
+  });
+  test('getMindMap returns an interesting mind map from core', () {
+    var nodes = [
+        new MindMapNode('node1', new Point(0, 0), null),
+        new MindMapNode('node2', new Point(0, 1), new Point(0, 0)),
+    ];
+    var responseVerifier = new ResponseVerifier('/map/1002/get');
+    core.when(callsTo('getMindMap')).alwaysReturn(new Future.value(nodes));
+    getMindMap(responseVerifier.req).then(expectAsync((_) {
+      core.getLogs(callsTo('getMindMap', 1002)).verify(happenedOnce);
+      responseVerifier.verify(equals(nodes.map((node) => node.toMap())));
     }));
   });
 }

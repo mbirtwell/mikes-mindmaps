@@ -60,6 +60,9 @@ main () {
   test('addToMap', () {
     expect(urls.addToMap, urlMatcher('/map/1234/add', ['1234']));
   });
+  test('get map', () {
+    expect(urls.getMindMap, urlMatcher('/map/1234/get', ['1234']));
+  });
   test('data stream', () {
     expect(urls.data, urlMatcher('/map/1234/data', ['1234']));
   });
