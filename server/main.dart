@@ -25,7 +25,7 @@ stream(HttpRequest req) {
   });
 }
 
-serve(Core core, bool serveBuild) {
+serve(Core core, bool serveBuild, int port) {
   var projroot = dirname(dirname(Platform.script.toFilePath()));
   if(serveBuild) {
     projroot = "$projroot/build";
@@ -40,7 +40,7 @@ serve(Core core, bool serveBuild) {
     return (req) => vd.serveFile(new File(join(webroot, fn)), req);
   }
 
-  HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4040)
+  HttpServer.bind('0.0.0.0', port)
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
     var router = new Router(server)
@@ -69,7 +69,15 @@ main() {
     redisConnectionString = "192.168.33.10:6379";
     deployed = false;
   }
+
+  var portEnv = Platform.environment['PORT'];
+  var port;
+  if(portEnv == null) {
+    port = 4040;
+  } else {
+    port = int.parse(portEnv);
+  }
   Core.startUp(redisConnectionString).then((core) {
-    serve(core, deployed);
+    serve(core, deployed, port);
   });
 }
