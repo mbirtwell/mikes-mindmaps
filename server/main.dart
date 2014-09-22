@@ -25,8 +25,11 @@ stream(HttpRequest req) {
   });
 }
 
-serve(Core core) {
+serve(Core core, bool serveBuild) {
   var projroot = dirname(dirname(Platform.script.toFilePath()));
+  if(serveBuild) {
+    projroot = "$projroot/build";
+  }
   var webroot = join(projroot, 'web');
   var vd = new VirtualDirectory(projroot);
 
@@ -54,16 +57,19 @@ serve(Core core) {
 
 main() {
   var redisConnectionString;
+  var deployed;
   if(Platform.environment.containsKey("REDISCLOUD_URL")) {
     var redisUrl = Platform.environment['REDSICLOUD_URL'];
     if(!redisUrl.startsWith("redis://")) {
       throw new ArgumentError("Bad redis URL $redisUrl");
     }
     redisConnectionString = redisUrl.substring("redis://".length);
+    deployed = true;
   } else {
     redisConnectionString = "192.168.33.10:6379";
+    deployed = false;
   }
   Core.startUp(redisConnectionString).then((core) {
-    serve(core);
+    serve(core, deployed);
   });
 }

@@ -2,8 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:svg' as svg;
-import '/lib/urls.dart' as urls;
-import '/lib/map_node.dart';
+import 'lib/urls.dart' as urls;
+import 'lib/map_node.dart';
 
 int mapId;
 int hexSize = 150;

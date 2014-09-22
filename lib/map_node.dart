@@ -60,4 +60,8 @@ class MindMapNode {
       this.parent == other.parent;
   }
 
+  get hashCode {
+    return this.contents.hashCode ^ this.position.hashCode ^
+        this.parent.hashCode;
+  }
 }
