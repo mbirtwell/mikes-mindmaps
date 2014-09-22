@@ -59,7 +59,7 @@ main() {
   var redisConnectionString;
   var deployed;
   if(Platform.environment.containsKey("REDISCLOUD_URL")) {
-    var redisUrl = Platform.environment['REDSICLOUD_URL'];
+    var redisUrl = Platform.environment['REDISCLOUD_URL'];
     if(!redisUrl.startsWith("redis://")) {
       throw new ArgumentError("Bad redis URL $redisUrl");
     }
