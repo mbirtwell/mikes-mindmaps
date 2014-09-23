@@ -39,7 +39,11 @@ serve(Core core, bool serveBuild, String bindIp, int port) {
   vd.jailRoot = false;
 
   serveFile(fn) {
-    return (req) => vd.serveFile(new File(join(webroot, fn)), req);
+    var f = new File(join(webroot, fn));
+    return (req) {
+      print("serving file $f for ${req.uri}");
+      vd.serveFile(f, req);
+    };
   }
 
   print("Starting HTTP Server ${bindIp}:$port");
