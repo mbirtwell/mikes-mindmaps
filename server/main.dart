@@ -25,7 +25,7 @@ stream(HttpRequest req) {
   });
 }
 
-serve(Core core, bool serveBuild, int port) {
+serve(Core core, bool serveBuild, String bindIp, int port) {
   var projroot = dirname(dirname(Platform.script.toFilePath()));
   if(serveBuild) {
     projroot = "$projroot/build";
@@ -40,10 +40,15 @@ serve(Core core, bool serveBuild, int port) {
     return (req) => vd.serveFile(new File(join(webroot, fn)), req);
   }
 
-  HttpServer.bind('0.0.0.0', port)
+  HttpServer.bind(bindIp, port)
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
-    var router = new Router(server)
+    var httpReqStream = server.transform(new StreamTransformer.fromHandlers(
+      handleData: (HttpRequest req, EventSink<HttpRequest> sink) {
+        print("got request ${req.uri}");
+        sink.add(req);
+    }));
+    var router = new Router(httpReqStream)
       ..serve(urls.index).listen(serveFile('index.html'))
       ..serve(urls.create).listen(createMindMap)
       ..serve(urls.test).listen(serveTest)
@@ -79,8 +84,15 @@ main() {
   } else {
     port = int.parse(portEnv);
   }
+
+  var bindIp;
+  if(deployed) {
+    bindIp = '0.0.0.0';
+  } else {
+    bindIp = '127.0.0.1';
+  }
   print("Starting core");
   Core.startUp(redisConnectionString).then((core) {
-    serve(core, deployed, port);
+    serve(core, deployed, bindIp, port);
   });
 }
