@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:svg' as svg;
 import 'lib/urls.dart' as urls;
 import 'lib/map_node.dart';
+import 'lib/hex_grid.dart';
 
 int mapId;
 int hexSize = 150;
@@ -74,22 +75,12 @@ makeNode(MindMapNode node) {
   var div = new DivElement()
     ..classes.add('node')
   ;
-  for(var posInfo in [
-      ["left", -1, 0],
-      ["top-left", 0, -1],
-      ["top-right", 1, -1],
-      ["right", 1, 0],
-      ["bottom-left", -1, 1],
-      ["bottom-right", 0, 1],
-  ]) {
-    var posCls = posInfo[0];
-    var xoff = posInfo[1];
-    var yoff = posInfo[2];
+  for(var direction in HexDirection.all) {
     div.append(new ButtonElement()
       ..text = "+"
-      ..classes.addAll(["node-plus", posCls])
+      ..classes.addAll(["node-plus", direction.name])
       ..onClick.listen((event) {
-        makeAddNodeForm(node.position, node.position + new Point(xoff, yoff));
+        makeAddNodeForm(node.position, node.position + direction.offset);
       })
     );
   }
