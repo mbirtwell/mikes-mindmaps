@@ -56,6 +56,7 @@ serve(Core core, bool serveBuild, int port) {
 }
 
 main() {
+  print("Starting Mike's mindmaps");
   var redisConnectionString;
   var deployed;
   if(Platform.environment.containsKey("REDISCLOUD_URL")) {
@@ -77,6 +78,7 @@ main() {
   } else {
     port = int.parse(portEnv);
   }
+  print("Starting core");
   Core.startUp(redisConnectionString).then((core) {
     serve(core, deployed, port);
   });

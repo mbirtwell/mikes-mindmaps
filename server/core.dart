@@ -19,13 +19,16 @@ class Core {
   }
 
   Future<Core> connect(String redisConnectionString) {
+    print("Connecting to redis $redisConnectionString");
     return RedisClient.connect(redisConnectionString).then((client) {
+      print("Connected to redis");
       this.redisClient = client;
       return this;
     });
   }
 
   Future<Core> initData() {
+    print("Setting up default data");
     return this.redisClient.msetnx({
       "next_map_id": 1000,
     }).then((_) => this);
