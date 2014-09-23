@@ -31,6 +31,8 @@ serve(Core core, bool serveBuild, String bindIp, int port) {
     projroot = "$projroot/build";
   }
   var webroot = join(projroot, 'web');
+
+  print("Setting up virtual directory $projroot");
   var vd = new VirtualDirectory(projroot);
 
   // for now. Necessary to server from packages as set up by DartEditor
@@ -40,9 +42,11 @@ serve(Core core, bool serveBuild, String bindIp, int port) {
     return (req) => vd.serveFile(new File(join(webroot, fn)), req);
   }
 
+  print("Starting HTTP Server ${bindIp}:$port");
   HttpServer.bind(bindIp, port)
       .then((HttpServer server) {
     print('listening on localhost, port ${server.port}');
+
     var httpReqStream = server.transform(new StreamTransformer.fromHandlers(
       handleData: (HttpRequest req, EventSink<HttpRequest> sink) {
         print("got request ${req.uri}");
