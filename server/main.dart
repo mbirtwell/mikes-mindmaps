@@ -60,11 +60,12 @@ main() {
   var redisConnectionString;
   var deployed;
   if(Platform.environment.containsKey("REDISCLOUD_URL")) {
+    var redisUrlPrefix = "redis://rediscloud:";
     var redisUrl = Platform.environment['REDISCLOUD_URL'];
-    if(!redisUrl.startsWith("redis://")) {
+    if(!redisUrl.startsWith(redisUrlPrefix)) {
       throw new ArgumentError("Bad redis URL $redisUrl");
     }
-    redisConnectionString = redisUrl.substring("redis://".length);
+    redisConnectionString = redisUrl.substring(redisUrlPrefix.length);
     deployed = true;
   } else {
     redisConnectionString = "192.168.33.10:6379";
