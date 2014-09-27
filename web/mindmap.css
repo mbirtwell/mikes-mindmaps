@@ -90,12 +90,18 @@ button#create:focus {
 }
 
 .node-plus {
+    display: none;
     width: 30px;
     height: 30px;
     border: 2px outset darkblue;
     border-radius: 15px;
     font-size: 20px;
     position: absolute;
+}
+
+.node:hover .node-plus,
+.node-plus:hover {
+    display: initial;
 }
 
 .node-plus:hover {
