@@ -169,3 +169,8 @@ button#create {
     stroke-width: 1px;
     fill: none;
 }
+
+.mindmap-link {
+    stroke: rgb(80, 0, 255);
+    stroke-width: 3px;
+}

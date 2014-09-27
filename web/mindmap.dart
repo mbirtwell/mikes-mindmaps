@@ -88,6 +88,23 @@ makeNode(MindMapNode node) {
     );
   }
   insert(wrapper, node.position);
+
+  if(node.parent != null) {
+    svg.SvgSvgElement svgEl = querySelector("svg.background");
+    var parentCenter = calcCenter(node.parent);
+    var thisCenter = calcCenter(node.position);
+    var line = new svg.LineElement()
+      ..attributes = {
+        'x1': parentCenter.x.toString(),
+        'y1': parentCenter.y.toString(),
+        'x2': thisCenter.x.toString(),
+        'y2': thisCenter.y.toString(),
+      }
+      ..classes.add('mindmap-link')
+    ;
+    svgEl.append(line);
+
+  }
 }
 
 makeAddNodeForm(Point parent, Point position) {
