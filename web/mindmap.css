@@ -32,14 +32,17 @@ h1 {
 
 button#create {
     display: block;
-    padding: 15px;
-    background-color: rgb(185, 255, 75);
+    padding: 15px 0;
+    color: white;
+    background-color: rgb(50, 200, 0);
     border: none;
-    border-radius: 15px;
-    width: 30%;
-    margin: 50px auto;
+    width: 100%;
     font-size: 1.2em;
     font-weight: bold;
+}
+
+button#create:hover {
+    background-color: rgb(100, 255, 0);
 }
 
 button#create:focus {
