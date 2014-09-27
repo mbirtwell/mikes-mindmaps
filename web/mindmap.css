@@ -4,7 +4,7 @@ html {
 }
 
 body {
-    background-color: darkgray;
+    background-color: rgb(160, 205, 255);
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     font-weight: normal;
@@ -21,25 +21,29 @@ svg.background {
 
 h1 {
     display: block;
-    width: 50%;
-    background-color: lightgray;
-    color: lightskyblue;
+    width: 100%;
+    background-color: rgb(80, 0, 255);
+    color: white;
     font-weight: bolder;
-    border: 2px solid darkblue;
-    border-radius: 15px;
-    margin: 15px auto;
+    margin: 40px auto;
     text-align: center;
-    padding: 15px;
+    padding: 20px 0;
 }
 
 button#create {
     display: block;
     padding: 15px;
-    background-color: lightgreen;
-    border: 2px solid darkgreen;
+    background-color: rgb(185, 255, 75);
+    border: none;
     border-radius: 15px;
     width: 30%;
-    margin: 10px auto;
+    margin: 50px auto;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+button#create:focus {
+    outline: none;
 }
 
 #idIndicatorWrapper {
