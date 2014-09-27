@@ -86,6 +86,16 @@ makeNode(MindMapNode node) {
   }
   div.append(new SpanElement()..text = node.contents);
   insert(div, node.position);
+
+  svg.SvgSvgElement svgEl = querySelector("svg.background");
+  var line = new svg.LineElement()
+    ..attributes = {
+      'x1': node.parent.x.toString(),
+      'y1': node.parent.y.toString(),
+      'x2': node.position.x.toString(),
+      'y2': node.position.y.toString(),
+  };
+  svgEl.append(line);
   return div;
 }
 
