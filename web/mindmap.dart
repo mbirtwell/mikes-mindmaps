@@ -72,11 +72,14 @@ main () {
 }
 
 makeNode(MindMapNode node) {
-  var div = new DivElement()
-    ..classes.add('node')
-  ;
+  var wrapper = new DivElement()
+    ..classes.add('nodeWrapper')
+    ..append(new DivElement()
+      ..classes.add('node')
+      ..text = node.contents
+      );
   for(var direction in HexDirection.all) {
-    div.append(new ButtonElement()
+    wrapper.append(new ButtonElement()
       ..text = "+"
       ..classes.addAll(["node-plus", direction.name])
       ..onClick.listen((event) {
@@ -84,9 +87,7 @@ makeNode(MindMapNode node) {
       })
     );
   }
-  div.append(new SpanElement()..text = node.contents);
-  insert(div, node.position);
-  return div;
+  insert(wrapper, node.position);
 }
 
 makeAddNodeForm(Point parent, Point position) {

@@ -53,11 +53,10 @@ button#create:focus {
     position: fixed;
     top: 15px;
     left: 15px;
-    padding: 10px;
-    border: 2px solid darkblue;
-    background-color: lightgray;
+    padding: 7px 2px;
+    background-color: rgb(80, 0, 255);
     font-weight: bolder;
-    color: lightskyblue;
+    color: white;
     width: 50px;
     text-align: center;
 }
@@ -81,39 +80,40 @@ button#create:focus {
     height: 100px;
 }
 
+.nodeWrapper {
+    width: 230px;
+    height: 80px;
+    display: block;
+    padding: 15px;
+    position: absolute;
+}
+
 .node {
     width: 200px;
     height: 50px;
     display: block;
-    border: 2px solid darkblue;
     background-color: lightgray;
-    padding: 20px;
-    position: absolute;
-    overflow: visible;
+    padding: 15px;
 }
 
 .node-plus {
     display: none;
     width: 30px;
     height: 30px;
-    border: 2px outset darkblue;
+    color: white;
+    border: none;
+    background-color: rgb(50, 200, 0);
     border-radius: 15px;
     font-size: 20px;
     position: absolute;
 }
 
-.node:hover .node-plus,
-.node-plus:hover {
+.nodeWrapper:hover .node-plus {
     display: initial;
 }
 
 .node-plus:hover {
-    background-color: darkgray;
-}
-
-.node-plus:active {
-    border: 2px inset darkblue;
-    border-radius: 15px;
+    background-color: rgb(100, 255, 0);
 }
 
 .node-plus:focus {
@@ -121,32 +121,32 @@ button#create:focus {
 }
 
 .node-plus.top-left {
-    top: -15px;
+    top: 0;
     left: calc(25% - 15px);
 }
 
 .node-plus.top-right {
-    top: -15px;
+    top: 0;
     left: calc(75% - 15px);
 }
 
 .node-plus.left {
     top: calc(50% - 15px);
-    left: -15px;
+    left: 0;
 }
 
 .node-plus.right {
     top: calc(50% - 15px);
-    right: -15px;
+    right: 0;
 }
 
 .node-plus.bottom-left {
-    bottom: -15px;
+    bottom: 0;
     left: calc(25% - 15px);
 }
 
 .node-plus.bottom-right {
-    bottom: -15px;
+    bottom: 0;
     left: calc(75% - 15px);
 }
 
