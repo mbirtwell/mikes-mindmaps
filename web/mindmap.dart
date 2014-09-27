@@ -81,7 +81,7 @@ makeNode(MindMapNode node) {
   for(var direction in HexDirection.all) {
     wrapper.append(new ButtonElement()
       ..text = "+"
-      ..classes.addAll(["node-plus", direction.name])
+      ..classes.addAll(["add", "node-plus", direction.name])
       ..onClick.listen((event) {
         makeAddNodeForm(node.position, node.position + direction.offset);
       })
@@ -94,10 +94,12 @@ makeAddNodeForm(Point parent, Point position) {
   var addNodeForm = new FormElement()
     ..classes.add('addnode')
     ..action = '#'
-    ..append(new TextAreaElement())
+    ..append(new TextAreaElement()
+      ..setAttribute('placeholder', 'Add text here')
+    )
     ..append(new ButtonElement()
       ..classes.add('add')
-      ..text = 'Add'
+      ..text = '✔'
       ..onClick.listen((event) => addNode(event, parent, position))
     )
   ;
