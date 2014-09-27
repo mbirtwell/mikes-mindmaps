@@ -91,24 +91,32 @@ makeNode(MindMapNode node) {
 }
 
 makeAddNodeForm(Point parent, Point position) {
-  var addNodeForm = new FormElement()
+  var addNodeForm;
+  addNodeForm = new FormElement()
     ..classes.add('addnode')
     ..action = '#'
     ..append(new TextAreaElement()
       ..setAttribute('placeholder', 'Add text here')
+      ..onKeyPress.listen((event) {
+        var keyEvent = new KeyEvent.wrap(event);
+        if(keyEvent.keyCode == KeyCode.ENTER) {
+          addNode(addNodeForm, parent, position);
+        }
+      })
     )
     ..append(new ButtonElement()
       ..classes.add('add')
       ..text = '✔'
-      ..onClick.listen((event) => addNode(event, parent, position))
+      ..onClick.listen((event) {
+        event.preventDefault();
+        addNode(addNodeForm, parent, position);
+      })
     )
   ;
   insert(addNodeForm, position);
 }
 
-addNode(Event e, Point parent, Point position) {
-  e.preventDefault();
-  Element addNode = (e.target as Element).parent;
+addNode(Element addNode, Point parent, Point position) {
   TextAreaElement textInput = addNode.querySelector('textarea');
   textInput.setAttribute("disabled", "true");
   MindMapNode node = new MindMapNode(textInput.value, position, parent);

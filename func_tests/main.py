@@ -3,6 +3,8 @@ from unittest import TestCase, main
 from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 import selenium.webdriver
 import time
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 
 def waitFor(func, timeout=3):
@@ -22,7 +24,7 @@ class NewVisitorTest(TestCase):
 
     def makeBrowser(self):
         options = selenium.webdriver.ChromeOptions()
-        options.binary_location = r"C:\darteditor-windows-x64\dart\chromium\chrome.exe"
+        options.binary_location = r"C:\darteditor-windows-x64-1.6\dart\chromium\chrome.exe"
         browser = selenium.webdriver.Chrome(
             executable_path=r"C:\chromedriver_win32\chromedriver.exe",
             chrome_options=options,
@@ -37,9 +39,12 @@ class NewVisitorTest(TestCase):
 
     def assertNodeTexts(self, person, expected):
         nodes = person.find_elements_by_css_selector('.node')
-        texts = {node.find_element_by_css_selector('span').text
-                 for node in nodes}
+        texts = {node.text for node in nodes}
         self.assertSetEqual(texts, expected)
+
+    def assertAllTrue(self, list):
+        for item in list:
+            self.assertTrue(item)
 
     def test_can_start_a_new_mind_map(self):
         regina = self.makeBrowser()
@@ -74,7 +79,7 @@ class NewVisitorTest(TestCase):
         # ... and there's an associated button
         add = regina.find_element_by_css_selector('.addnode button')
         # it says add
-        self.assertEqual(add.text, 'Add')
+        self.assertEqual('✔', add.text)
         # so she presses it
         add.click()
         #  it doesn't go any where
@@ -87,20 +92,29 @@ class NewVisitorTest(TestCase):
         # And there is no other addnode
         self.assertEqual(len(regina.find_elements_by_css_selector('.addnode')), 0)
 
-        node = regina.find_element_by_css_selector('.node')
-        # The node text is what regina typed in
-        self.assertEqual(node.find_element_by_css_selector('span').text, 'herbs')
-        # The node has 6 buttons for add new nodes
-        self.assertEqual(len(node.find_elements_by_css_selector('.node-plus')), 6)
+        # And there is a now a node saying herbs
+        waitFor(lambda: self.assertNodeTexts(regina, {'herbs'}))
+        # The node has 6 buttons for adding new nodes
+        addNodeButtons = regina.find_elements_by_css_selector('.node-plus')
+        self.assertEqual(len(addNodeButtons), 6)
+
+        # moving away hides them
+        ActionChains(regina).move_to_element_with_offset(addNodeButtons[0], 200, 200).perform()
+        waitFor(lambda: self.assertAllTrue(not b.is_displayed() for b in addNodeButtons), timeout=10)
+
+        # Moving over them causes them to appear
+        ActionChains(regina).move_by_offset(-200, -200).perform()
+        waitFor(lambda: self.assertAllTrue(b.is_displayed() for b in addNodeButtons), timeout=10)
 
         # She decides to click one
-        node.find_element_by_css_selector('.bottom-right').click()
+        addNodeButtons[0].click()
         # Clicking one of the plus buttons creates a new addnode
         addNode = regina.find_element_by_css_selector('.addnode')
         # enters text and clicks add
         input = addNode.find_element_by_css_selector('textarea')
         input.send_keys('rosemary')
-        addNode.find_element_by_css_selector('button').click()
+        # This time she presses enter to complete editing
+        input.send_keys(Keys.RETURN)
 
         # There's now two nodes with what regina typed
         waitFor(lambda: self.assertNodeTexts(regina, {'herbs', 'rosemary'}))
