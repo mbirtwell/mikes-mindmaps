@@ -6,7 +6,7 @@ class MindMapNode {
   Point position;
   Point parent;
 
-  MindMapNode(this.contents, this.position, this.parent) {
+  MindMapNode(this.position, this.parent, [this.contents]) {
     if(this.position == null) {
       throw new ArgumentError("Position must be set");
     }
@@ -16,9 +16,9 @@ class MindMapNode {
   }
 
   MindMapNode.fromMap(Map data):
-    this(data['contents'],
-         _pointFromMap(data['position']),
-         _pointFromMap(data['parent']));
+    this(_pointFromMap(data['position']),
+         _pointFromMap(data['parent']),
+         data['contents']);
 
   MindMapNode.fromJson(String json): this.fromMap(JSON.decode(json));
 

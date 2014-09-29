@@ -8,6 +8,7 @@ import 'lib/hex_grid.dart';
 
 int mapId;
 int hexSize = 150;
+HexGrid grid = new HexGrid();
 
 addHex(Point p) {
   svg.SvgSvgElement svgEl = querySelector("svg.background");
@@ -60,7 +61,13 @@ main () {
     if(nodes.length == 0) {
       makeAddNodeForm(null, new Point(0, 0));
     } else {
-      nodes.forEach((node) => makeNode(node));
+      nodes.forEach((node) {
+        grid[node.position].fill(node);
+        makeNode(node);
+        if(node.parent != null)
+          drawLine(node);
+        removePlusButtons(node.position);
+      });
     }
   });
 
@@ -73,42 +80,45 @@ main () {
 
 makeNode(MindMapNode node) {
   var wrapper = new DivElement()
+    ..setAttribute('hex-cell-x', node.position.x.toString())
+    ..setAttribute('hex-cell-y', node.position.y.toString())
     ..classes.add('nodeWrapper')
     ..append(new DivElement()
       ..classes.add('node')
       ..text = node.contents
       );
   for(var direction in HexDirection.all) {
-    wrapper.append(new ButtonElement()
-      ..text = "+"
-      ..classes.addAll(["add", "node-plus", direction.name])
-      ..onClick.listen((event) {
+    if (grid[node.position + direction.offset].state == CellState.empty) {
+      wrapper.append(new ButtonElement()
+        ..text = "+"
+        ..classes.addAll(["add", "node-plus", direction.name])
+        ..onClick.listen((event) {
         makeAddNodeForm(node.position, node.position + direction.offset);
-      })
-    );
+      }));
+    }
   }
   insert(wrapper, node.position);
+}
 
-  if(node.parent != null) {
-    svg.SvgSvgElement svgEl = querySelector("svg.background");
-    var parentCenter = calcCenter(node.parent);
-    var thisCenter = calcCenter(node.position);
-    var line = new svg.LineElement()
-      ..attributes = {
-        'x1': parentCenter.x.toString(),
-        'y1': parentCenter.y.toString(),
-        'x2': thisCenter.x.toString(),
-        'y2': thisCenter.y.toString(),
-      }
-      ..classes.add('mindmap-link')
-    ;
-    svgEl.append(line);
-
+drawLine(MindMapNode node) {
+  svg.SvgSvgElement svgEl = querySelector("svg.background");
+  var parentCenter = calcCenter(node.parent);
+  var thisCenter = calcCenter(node.position);
+  var line = new svg.LineElement()
+    ..attributes = {
+      'x1': parentCenter.x.toString(),
+      'y1': parentCenter.y.toString(),
+      'x2': thisCenter.x.toString(),
+      'y2': thisCenter.y.toString(),
   }
+    ..classes.add('mindmap-link')
+  ;
+  svgEl.append(line);
 }
 
 makeAddNodeForm(Point parent, Point position) {
   var addNodeForm;
+  var node = grid[position].add(parent);
   addNodeForm = new FormElement()
     ..classes.add('addnode')
     ..action = '#'
@@ -117,7 +127,7 @@ makeAddNodeForm(Point parent, Point position) {
       ..onKeyPress.listen((event) {
         var keyEvent = new KeyEvent.wrap(event);
         if(keyEvent.keyCode == KeyCode.ENTER) {
-          addNode(addNodeForm, parent, position);
+          addNode(addNodeForm, node);
         }
       })
     )
@@ -126,17 +136,21 @@ makeAddNodeForm(Point parent, Point position) {
       ..text = '✔'
       ..onClick.listen((event) {
         event.preventDefault();
-        addNode(addNodeForm, parent, position);
+        addNode(addNodeForm, node);
       })
     )
   ;
   insert(addNodeForm, position);
+  if(node.parent != null) {
+    drawLine(node);
+  }
+  removePlusButtons(node.position);
 }
 
-addNode(Element addNode, Point parent, Point position) {
+addNode(Element addNode, MindMapNode node) {
   TextAreaElement textInput = addNode.querySelector('textarea');
   textInput.setAttribute("disabled", "true");
-  MindMapNode node = new MindMapNode(textInput.value, position, parent);
+  node.contents = textInput.value;
   HttpRequest.request('/map/$mapId/add',
                       method: "POST",
                       mimeType: "application/json",
@@ -152,4 +166,19 @@ addNode(Element addNode, Point parent, Point position) {
     addNode.remove();
     makeNode(node);
   });
+}
+
+queryNodePlusButton(Point p, HexDirection d) {
+  return querySelector('.nodeWrapper[hex-cell-x="${p.x}"][hex-cell-y="${p.y}"] .node-plus.${d.name}');
+}
+
+removePlusButtons(Point position) {
+  for(var cell in grid.getNeighbours(position)) {
+    if(cell.state != CellState.full) {
+      continue;
+    }
+    var direction = HexDirection.fromOffset(position - cell.position);
+    var button = queryNodePlusButton(cell.position, direction);
+    button.remove();
+  }
 }

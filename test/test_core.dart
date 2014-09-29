@@ -31,7 +31,7 @@ main () {
     }));
   });
   test('add node extends mindmap with node data', () {
-    var node = new MindMapNode("herbs", new Point(0, 0), null);
+    var node = new MindMapNode(new Point(0, 0), null, "herbs");
     core.addNode(1001, node).then(expectAsync((res) {
       return core.redisClient.lrange("map/1001");
     })).then(expectAsync((mapStored) {
@@ -47,8 +47,8 @@ main () {
   });
   test('retrieve a mind map with a couple of items', (){
     var nodes = [
-      new MindMapNode('node1', new Point(0, 0), null),
-      new MindMapNode('node2', new Point(0, 1), new Point(0, 0)),
+      new MindMapNode(new Point(0, 0), null, 'node1'),
+      new MindMapNode(new Point(0, 1), new Point(0, 0), 'node2'),
     ];
     return core.redisClient.rpush('map/1001', nodes.map((node) => node.toMap())).then((_) {
       return core.getMindMap(1001);

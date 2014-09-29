@@ -169,7 +169,7 @@ main () {
     }));
   });
   test('addNode', () {
-    var node = new MindMapNode('herbs', new Point(0, 0), null);
+    var node = new MindMapNode(new Point(0, 0), null, 'herbs');
     var responseVerifier = new ResponseVerifier('/map/1001/add', node.toJson());
     core.when(callsTo('addNode')).alwaysReturn(new Future.value(101001));
     addNode(responseVerifier.req).then(expectAsync((_) {
@@ -187,8 +187,8 @@ main () {
   });
   test('getMindMap returns an interesting mind map from core', () {
     var nodes = [
-        new MindMapNode('node1', new Point(0, 0), null),
-        new MindMapNode('node2', new Point(0, 1), new Point(0, 0)),
+        new MindMapNode(new Point(0, 0), null, 'node1'),
+        new MindMapNode(new Point(0, 1), new Point(0, 0), 'node2'),
     ];
     var responseVerifier = new ResponseVerifier('/map/1002/get');
     core.when(callsTo('getMindMap')).alwaysReturn(new Future.value(nodes));
