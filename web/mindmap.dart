@@ -9,6 +9,7 @@ import 'lib/hex_grid.dart';
 int mapId;
 int hexSize = 150;
 HexGrid grid = new HexGrid();
+BodyElement body;
 
 addHex(Point p) {
   svg.SvgSvgElement svgEl = querySelector("svg.background");
@@ -38,13 +39,13 @@ addHex(Point p) {
 Point calcCenter(Point p) {
   var r = hexSize;
   var ox = cos(30 * PI / 180);
-  var cx = window.innerWidth/2 + p.x * 2 * ox * r + p.y * 1.5 * r * tan(30 * PI / 180);
-  var cy = window.innerHeight/2 + p.y * 1.5 * r;
+  var cx = body.scrollWidth/2 + p.x * 2 * ox * r + p.y * 1.5 * r * tan(30 * PI / 180);
+  var cy = body.scrollWidth/2 + p.y * 1.5 * r;
   return new Point(cx, cy);
 }
 
 insert(Element el, Point p) {
-  querySelector('body').append(el);
+  body.append(el);
   var c = calcCenter(p);
   el
     ..style.left = "${c.x - el.offsetWidth/2}px"
@@ -53,6 +54,9 @@ insert(Element el, Point p) {
 }
 
 main () {
+  body = querySelector('body');
+  window.scrollTo((body.scrollWidth - window.innerWidth/2).toInt(),
+                  (body.scrollHeight - window.innerHeight/2).toInt());
   mapId = int.parse(urls.map.parse(window.location.pathname)[0]);
   querySelector('#idIndicator').text = mapId.toString();
 
