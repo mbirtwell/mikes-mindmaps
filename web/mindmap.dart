@@ -55,8 +55,8 @@ insert(Element el, Point p) {
 
 main () {
   body = querySelector('body');
-  window.scrollTo((body.scrollWidth - window.innerWidth/2).toInt(),
-                  (body.scrollHeight - window.innerHeight/2).toInt());
+  window.scrollTo((body.scrollWidth/2 - window.innerWidth/2).toInt(),
+                  (body.scrollHeight/2 - window.innerHeight/2).toInt());
   mapId = int.parse(urls.map.parse(window.location.pathname)[0]);
   querySelector('#idIndicator').text = mapId.toString();
 
@@ -75,11 +75,11 @@ main () {
     }
   });
 
-  for(var x = -2; x < 3; ++x) {
-    for(var y = -1; y < 2; ++y) {
-      addHex(new Point(x, y));
-    }
-  }
+//  for(var x = -2; x < 3; ++x) {
+//    for(var y = -1; y < 2; ++y) {
+//      addHex(new Point(x, y));
+//    }
+//  }
 }
 
 makeNode(MindMapNode node) {
