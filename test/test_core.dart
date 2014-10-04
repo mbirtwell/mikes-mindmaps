@@ -1,4 +1,5 @@
 import "dart:math";
+import "dart:async";
 
 import "package:unittest/unittest.dart";
 import "package:redis_client/redis_client.dart";
@@ -10,15 +11,16 @@ import "../lib/map_node.dart";
 main () {
   Core core;
   setUp(() {
-    return new Core().connect("192.168.33.10:6379").then((core) {
+    core = new Core();
+    var setupMainClient = core.connect("192.168.33.10:6379").then((core) {
       return core.redisClient.select(1).then((_) {
         return core.redisClient.flushdb();
       }).then((_) {
         return core.initData();
       });
-    }).then((core_){
-      core = core_;
     });
+    var setupSubscribeClient = core.connectSubscribeChannel("192.168.33.10:6379");
+    return Future.wait([setupMainClient, setupSubscribeClient]);
   });
   tearDown(() {
     return core.close().then((_) {
@@ -55,5 +57,12 @@ main () {
     }).then((result) {
       expect(result, equals(nodes));
     });
+  });
+  test('add node to mindmap is signalled to subscription', () {
+    var node = new MindMapNode(new Point(0, 1), new Point(0, 0), "node");
+    core.subscribeToMindMap(1001).listen(expectAsync((update) {
+      expect(update, equals(node));
+    }));
+    core.addNode(1001, node);
   });
 }

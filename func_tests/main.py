@@ -41,6 +41,7 @@ class NewVisitorTest(TestCase):
         nodes = person.find_elements_by_css_selector('.node')
         texts = {node.text for node in nodes}
         self.assertSetEqual(texts, expected)
+        return nodes
 
     def assertAllTrue(self, list):
         for item in list:
@@ -106,8 +107,10 @@ class NewVisitorTest(TestCase):
         ActionChains(regina).move_by_offset(-200, -200).perform()
         waitFor(lambda: self.assertAllTrue(b.is_displayed() for b in addNodeButtons), timeout=10)
 
-        # She decides to click one
-        addNodeButtons[0].click()
+        # She decides to click the left one
+        [button for button in addNodeButtons
+         if 'left' in button.get_attribute('class').split()
+        ][0].click()
         # Clicking one of the plus buttons creates a new addnode
         addNode = regina.find_element_by_css_selector('.addnode')
         # enters text and clicks add
@@ -126,7 +129,23 @@ class NewVisitorTest(TestCase):
         # The page has the same stuff on it as when regina left it
         self.assertNodeTexts(edith, {'herbs', 'rosemary'})
 
-        self.fail("Need to extend tests for collaboration")
+        # Edith adds a node and regina can see it
+        edithHerbs = None
+        for el in edith.find_elements_by_css_selector('.nodeWrapper'):
+            if el.find_element_by_css_selector('.node').text == 'herbs':
+                edithHerbs = el
+                break
+
+        ActionChains(edith).move_to_element(edithHerbs).perform()
+        edithHerbs.find_element_by_css_selector('.node-plus.right').click()
+
+        newNodeText = edith.find_element_by_css_selector('.addnode textarea')
+        newNodeText.send_keys('basil')
+        newNodeText.send_keys(Keys.RETURN)
+
+        waitFor(lambda: self.assertNodeTexts(edith, {'herbs', 'rosemary', 'basil'}))
+        waitFor(lambda: self.assertNodeTexts(regina, {'herbs', 'rosemary', 'basil'}))
+
 
 
 if __name__ == "__main__":

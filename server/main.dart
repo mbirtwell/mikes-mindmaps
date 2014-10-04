@@ -64,6 +64,7 @@ serve(Core core, bool serveBuild, String bindIp, int port) {
       ..serve(urls.map).listen(serveFile('mindmap.html'))
       ..serve(urls.addToMap).listen(addNode)
       ..serve(urls.getMindMap).listen(getMindMap)
+      ..serve(urls.data).listen(getUpdates)
       ..defaultStream.listen(vd.serveRequest);
   }).catchError((e) => print(e.toString()));
 }

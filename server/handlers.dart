@@ -35,3 +35,12 @@ Future getMindMap(HttpRequest req) {
     return req.response.close();
   });
 }
+
+getUpdates(HttpRequest req) {
+  var args = urls.data.parse(req.uri.path);
+  WebSocketTransformer.upgrade(req).then((websock) {
+    Core.instance.subscribeToMindMap(int.parse(args[0])).listen((update) {
+      websock.add(JSON.encode(update.toMap()));
+    });
+  });
+}

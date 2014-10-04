@@ -75,6 +75,18 @@ main () {
     }
   });
 
+
+  new WebSocket("ws://${window.location.host}/map/${mapId}/data").onMessage.listen((MessageEvent msg) {
+    MindMapNode node = new MindMapNode.fromJson(msg.data);
+    if(grid[node.position].state == CellState.empty) {
+      grid[node.position].fill(node);
+      makeNode(node);
+      if(node.parent != null)
+        drawLine(node);
+      removePlusButtons(node.position);
+    }
+  });
+
 //  for(var x = -2; x < 3; ++x) {
 //    for(var y = -1; y < 2; ++y) {
 //      addHex(new Point(x, y));

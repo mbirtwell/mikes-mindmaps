@@ -54,7 +54,13 @@ class MindMapNode {
 
   toJson() => JSON.encode(toMap());
 
-  bool operator ==(MindMapNode other) {
+  bool operator ==(Object other_) {
+    // To work with unittest we must return false and not throw when
+    // compared against other types
+    if(other_ is! MindMapNode) {
+      return false;
+    }
+    MindMapNode other = other_ as MindMapNode;
     return this.contents == other.contents &&
       this.position == other.position &&
       this.parent == other.parent;
