@@ -38,9 +38,18 @@ Future getMindMap(HttpRequest req) {
 
 getUpdates(HttpRequest req) {
   var args = urls.data.parse(req.uri.path);
-  WebSocketTransformer.upgrade(req).then((websock) {
-    Core.instance.subscribeToMindMap(int.parse(args[0])).listen((update) {
-      websock.add(JSON.encode(update.toMap()));
+  Core.instance.subscribeToMindMap(int.parse(args[0])).then((updateSubscription) {
+    WebSocketTransformer.upgrade(req).then((websock) {
+      runZoned(() {
+        updateSubscription.stream.listen((update) {
+          print("update ${updateSubscription.refNumber}: $update");
+          websock.add(JSON.encode(update.toMap()));
+        });
+      },
+      onError: (err) {
+        print("err in stream: $err");
+      }
+      );
     });
   });
 }

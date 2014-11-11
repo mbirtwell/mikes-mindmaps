@@ -70,4 +70,8 @@ class MindMapNode {
     return this.contents.hashCode ^ this.position.hashCode ^
         this.parent.hashCode;
   }
+
+  String toString() {
+    return "MindMapNode($position, $parent, $contents)";
+  }
 }

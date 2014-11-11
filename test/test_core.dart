@@ -11,30 +11,34 @@ import "../lib/map_node.dart";
 main () {
   Core core;
   setUp(() {
-    core = new Core();
-    var setupMainClient = core.connect("192.168.33.10:6379").then((core) {
-      return core.redisClient.select(1).then((_) {
-        return core.redisClient.flushdb();
+    print("\nSetup");
+    expect(core, isNull);
+    return new Core("192.168.33.10:6379").connect().then((core_) {
+      return core_.redisClient.select(1).then((_) {
+        return core_.redisClient.flushdb();
       }).then((_) {
-        return core.initData();
+        return core_.initData();
+      }).then((_) {
+        expect(core, isNull);
+        core = core_;
+        print("Setup done");
       });
     });
-    var setupSubscribeClient = core.connectSubscribeChannel("192.168.33.10:6379");
-    return Future.wait([setupMainClient, setupSubscribeClient]);
   });
   tearDown(() {
     return core.close().then((_) {
       core = null;
+      print("TearDown done");
     });
   });
   test('add map', () {
-    core.createMap().then(expectAsync((res) {
+    return core.createMap().then(expectAsync((res) {
       expect(res, equals(1001));
     }));
   });
   test('add node extends mindmap with node data', () {
     var node = new MindMapNode(new Point(0, 0), null, "herbs");
-    core.addNode(1001, node).then(expectAsync((res) {
+    return core.addNode(1001, node).then(expectAsync((res) {
       return core.redisClient.lrange("map/1001");
     })).then(expectAsync((mapStored) {
       expect(mapStored, isList);
@@ -43,7 +47,7 @@ main () {
     }));
   });
   test('retrieve an non-existant mind map', () {
-    core.getMindMap(1001).then(expectAsync((nodes) {
+    return core.getMindMap(1001).then(expectAsync((nodes) {
       expect(nodes, equals([]));
     }));
   });
@@ -59,10 +63,91 @@ main () {
     });
   });
   test('add node to mindmap is signalled to subscription', () {
+    print("TEST add node to mindmap is signalled to subscription");
     var node = new MindMapNode(new Point(0, 1), new Point(0, 0), "node");
-    core.subscribeToMindMap(1001).listen(expectAsync((update) {
-      expect(update, equals(node));
-    }));
-    core.addNode(1001, node);
+    return core.subscribeToMindMap(1001).then((updateSubscription) {
+      updateSubscription.stream.listen(expectAsync((update) {
+        print("update in test");
+        expect(update, equals(node));
+      }, count:1, max:2));
+    }).then((_) {
+      core.addNode(1001, node);
+    });
+  });
+  test('two subscriptions both get the data they expect', () {
+    print("TEST two subscriptions both get the data they expect");
+    var node1 = new MindMapNode(new Point(0, 1), new Point(0, 0), "node1");
+    var node2 = new MindMapNode(new Point(0, 1), new Point(0, 0), "node2");
+    return Future.wait([
+      core.subscribeToMindMap(1001).then((updateSubscription) {
+        print("subscribe 1");
+        updateSubscription.stream.listen(expectAsync((update) {
+          expect(update, equals(node1));
+        }));
+      }),
+      core.subscribeToMindMap(1002).then((updateSubscription) {
+        print("subscribe 2");
+        updateSubscription.stream.listen(expectAsync((update) {
+          expect(update, equals(node2));
+        }));
+      }),
+    ]).then((_) {
+      return core.addNode(1002, node2);
+    }).then((_) {
+      return core.addNode(1001, node1);
+    });
+  });
+  test('two subscriptions both get the data they expect (interleaved adds)', () {
+    print("TEST two subscriptions both get the data they expect (interleaved adds)");
+    var node1 = new MindMapNode(new Point(0, 1), new Point(0, 0), "node1");
+    var node2 = new MindMapNode(new Point(0, 1), new Point(0, 0), "node2");
+    return Future.wait([
+        core.subscribeToMindMap(1001).then((updateSubscription) {
+          print("subscribe 1");
+          updateSubscription.stream.listen(expectAsync((update) {
+            expect(update, equals(node1));
+          }));
+        }),
+        core.subscribeToMindMap(1002).then((updateSubscription) {
+          print("subscribe 2");
+          updateSubscription.stream.listen(expectAsync((update) {
+            expect(update, equals(node2));
+          }));
+        }),
+    ]).then((_) {
+      return Future.wait([
+          core.addNode(1002, node2),
+          core.addNode(1001, node1),
+      ]);
+    });
+  });
+  test('two subscriptions two the same mind map both get data', () {
+    print("TEST two same subscriptions start");
+    var node1 = new MindMapNode(new Point(0, 1), new Point(0, 0), "node1");
+    return new Future(() {
+      print("Setup subscription one");
+      return core.subscribeToMindMap(1001).then((updateSubscription) {
+        print("Got subscription one");
+        expect(updateSubscription.refNumber, equals(0));
+        updateSubscription.stream.listen(expectAsync((update) {
+          expect(update, equals(node1));
+        }));
+      });
+    }).then((_) {
+      print("Setup subscription two");
+      return core.subscribeToMindMap(1001).then((updateSubscription) {
+        print("Got subscription two");
+        expect(updateSubscription.refNumber, equals(1));
+        updateSubscription.stream.listen(expectAsync((update) {
+          expect(update, equals(node1));
+        }));
+      });
+    }).then((_) {
+        print("addNode");
+        core.addNode(1001, node1);
+    });
+  });
+  test('subscription created after subscription closes works', () {
+    // TODO
   });
 }
