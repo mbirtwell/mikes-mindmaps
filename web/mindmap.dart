@@ -98,11 +98,15 @@ makeNode(MindMapNode node) {
   var wrapper = new DivElement()
     ..setAttribute('hex-cell-x', node.position.x.toString())
     ..setAttribute('hex-cell-y', node.position.y.toString())
+    ..setAttribute('tabindex', '-1')
     ..classes.add('nodeWrapper')
     ..append(new DivElement()
       ..classes.add('node')
       ..text = node.contents
       );
+  wrapper.onClick.listen((event) {
+    wrapper.focus();
+  });
   for(var direction in HexDirection.all) {
     if (grid[node.position + direction.offset].state == CellState.empty) {
       wrapper.append(new ButtonElement()

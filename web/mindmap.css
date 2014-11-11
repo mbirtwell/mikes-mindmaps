@@ -37,7 +37,7 @@ button {
     border: none;
 }
 
-button:focus {
+*:focus {
     outline: none;
 }
 
@@ -133,7 +133,8 @@ button#create {
     position: absolute;
 }
 
-.nodeWrapper:hover .node-plus {
+.nodeWrapper:hover .node-plus,
+.nodeWrapper:focus .node-plus {
     display: initial;
 }
 
