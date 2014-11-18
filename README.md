@@ -1,9 +1,9 @@
 Mike's Mind Maps
 ================
 
-A collaborative mind map creation tool.
+A collaborative mind map creation tool [here](http://mikes-mindmaps.herokuapp.com/)
 
-Press the big green button above to create a mind map.
+There's a big green button to create a mind map.
 Share the URL of the mind map with a friend and you should both
 see any changes the other person makes in real time.
 
