@@ -7,6 +7,6 @@ dependencies:
   redis_client:
     git:
       url: git://github.com/mbirtwell/redis_client.git
-dev_dependancies:
+dev_dependencies:
   unittest: any
   mock: any
