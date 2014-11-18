@@ -1,11 +1,12 @@
-name: play1
-description: A sample web application
+name: mikes_mindmaps
+description: A collaborative mind map tool
 dependencies:
   browser: any
   http_server: any
   route: any
-  unittest: any
-  mock: any
   redis_client:
     git:
       url: git://github.com/mbirtwell/redis_client.git
+dev_dependancies:
+  unittest: any
+  mock: any
