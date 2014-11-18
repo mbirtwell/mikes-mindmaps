@@ -1,3 +1,5 @@
+library mindmap_hex_grid;
+
 import "dart:math";
 
 import "map_node.dart";

@@ -1,5 +1,4 @@
-import "dart:async";
-import "package:redis_client/redis_client.dart";
+part of mindmap_server;
 
 class RedisConnectionCache {
   String _connectionString;

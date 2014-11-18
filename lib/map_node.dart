@@ -1,3 +1,5 @@
+library mindmap_node;
+
 import "dart:math";
 import "dart:convert";
 

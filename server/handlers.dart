@@ -1,10 +1,4 @@
-import "dart:io";
-import "dart:async";
-import "dart:convert";
-
-import "../lib/urls.dart" as urls;
-import "../lib/map_node.dart";
-import "core.dart";
+part of mindmap_server;
 
 
 Future createMindMap(HttpRequest request) {

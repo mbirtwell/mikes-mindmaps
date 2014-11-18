@@ -1,3 +1,5 @@
+library mindmap_urls;
+
 import "package:route/url_pattern.dart";
 
 UrlPattern index = new UrlPattern(r'/');

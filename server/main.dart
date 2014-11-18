@@ -1,12 +1,19 @@
+library mindmap_server;
+
 import 'dart:io';
 import 'dart:async';
+import "dart:convert";
 import 'package:http_server/http_server.dart';
 import 'package:path/path.dart';
 import 'package:route/server.dart';
+import "package:redis_client/redis_client.dart";
 
 import '../lib/urls.dart' as urls;
-import 'handlers.dart';
-import 'core.dart';
+import "../lib/map_node.dart";
+
+part "redis_connection_cache.dart";
+part "handlers.dart";
+part "core.dart";
 
 serveTest(HttpRequest req) {
   req.response.write("test page");
