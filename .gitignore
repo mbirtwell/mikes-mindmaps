@@ -19,3 +19,5 @@ pubspec.lock
 /.idea
 web/lib/
 .vagrant
+
+__pycache__
