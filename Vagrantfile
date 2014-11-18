@@ -23,4 +23,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   # Use VBoxManage to customize the VM. For example to change memory:
   #   vb.customize ["modifyvm", :id, "--memory", "1024"]
   # end
+  config.vm.provision "shell" do |s|
+    s.inline = <<SCRIPT
+apt-get update
+apt-get install -y redis-server
+sed -i 's/^bind .*/bind 0.0.0.0/' /etc/redis/redis.conf
+service redis-server restart
+SCRIPT
+  end
 end
